@@ -145,18 +145,20 @@
 
 <div class="d-flex">
     <div class="flex-grow-1 p-3 d-flex flex-column align-items-center">
-        <button class="btn btn-primary" onclick="showButtons('processDiscovery')">Process Discovery</button>
-        <div class="hidden-buttons" id="buttons-processDiscovery" style="display: none;">
-            <button class="btn btn-secondary circular-button" onclick="selectButton1(this)">Alpha miner</button>
-            <button class="btn btn-secondary circular-button" onclick="selectButton1(this)">Inductive miner</button>
+    <button class="btn btn-primary" onclick="showButtons('processDiscovery')">Process Discovery</button>
+    <div class="hidden-buttons" id="buttons-processDiscovery" style="display: none;">
+        <button class="btn btn-secondary circular-button" onclick="selectButton1(this)">Alpha miner</button>
+        <button class="btn btn-secondary circular-button" onclick="selectButton1(this)">Inductive miner</button>
+        <div class="d-flex align-items-center">
             <button class="btn btn-secondary circular-button" onclick="selectButton1(this)">Directly Followed Graph</button>
+            <div class="ml-2"> {# same container as DFG button #}
+                <button class="btn btn-secondary" onclick="selectDFGVariant('FREQUENCY')">FREQUENCY</button>
+                <button class="btn btn-secondary" onclick="selectDFGVariant('PERFORMANCE')">PERFORMANCE</button>
+            </div>
         </div>
     </div>
+</div>
 
-    <div class="hidden-buttons" id="dfg-options" style="display: none;">
-        <button class="btn btn-secondary" onclick="selectDFGVariant('FREQUENCY')">FREQUENCY</button>
-        <button class="btn btn-secondary" onclick="selectDFGVariant('PERFORMANCE')">PERFORMANCE</button>
-    </div>
 
     <div class="flex-grow-1 p-3 d-flex flex-column align-items-center">
         <button class="btn btn-primary" onclick="showButtons('clustering')">Clustering</button>
