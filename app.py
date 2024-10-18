@@ -84,12 +84,15 @@ def submit():
     selected_value1 = request.form.get('selected_value1', None)  # Get value from process discovery
     selected_value2 = request.form.get('selected_value2', None)  # Get value from clustering
     selected_value3 = request.form.get('selected_value3', None) # submit
+    dfg_variant = request.form.get('dfg_variant', None)
 
 # debugging purpose
     print("selected_value:", selected_value)    # data to see
     print("selected_value1:", selected_value1)  # process discovery
     print("selected_value2:", selected_value2)  # clustering
     print("selected_value3:", selected_value3)  # submit
+    print("dfg_variant:", dfg_variant)
+
 #------------------
     global FILENAME
     # FILENAME = './'
@@ -97,7 +100,7 @@ def submit():
     if selected_value == "Temperature":
         td_csv = temp_delay(FILENAME,selected_value2)
         if selected_value1 == "Directly Followed Graph":
-            image_path = dfg(td_csv, selected_value3)
+            image_path = dfg(td_csv, selected_value3, dfg_variant)
             image_url = url_for('static', filename=os.path.basename(image_path))
         # elif selected_value1 == "Petri net":
         #     print(FILENAME)
@@ -113,7 +116,7 @@ def submit():
     if selected_value == "Multiple":
         td_csv = mult_delay(FILENAME, selected_value2)
         if selected_value1 == "Directly Followed Graph":
-            image_path = dfg(td_csv, selected_value3)
+            image_path = dfg(td_csv, selected_value3, dfg_variant)
             image_url = url_for('static', filename=os.path.basename(image_path))
         # elif selected_value1 == "Petri net":
         #     print(FILENAME)

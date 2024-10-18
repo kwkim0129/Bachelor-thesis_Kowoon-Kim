@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Page with Bootstrap</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;  /* Change to your preferred font */
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;  /* Center horizontally */
+            flex-direction: column;
+            align-items: center;      /* Center vertically */
+        }
+        .custom-title {
+            font-size: 1.5rem;  /* Adjust font size as needed */
+            font-weight: bold;   /* Bold font style */
+            color: #333;         /* Change text color if needed */
+        }
+        .hidden-buttons {
+            display: none; /* Initially hide the additional buttons */
+            flex-direction: row; /* Stack buttons horizontally */
+            align-items: center; /* Center align the buttons */
+            margin-top: 20px; /* Add some margin at the top for spacing */
+        }
+        .hidden-buttons.show {
+            display: flex;
+        }
+        .nav-button {
+            width: 100%; /* Make nav buttons full width */
+        }
+        .circular-button {
+            background-color: blue; /* Set background color */
+            width: 150px; /* Set width */
+            height: 100px; /* Set height */
+            border-radius: 50%; /* Make buttons circular */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 10px; /* Equal spacing between buttons horizontally */
+            font-size: 1.2rem; /* Font size */
+            color: white; /* Button text color */
+            border: none; /* Remove border */
+            transition: background-color 0.3s; /* Smooth background transition */
+        }
+        .selected {
+            background-color: grey; /* Change to grey when selected */
+            color: white;
+        }
+        .select-btn {
+            background-color: white;
+            color: black;
+            border: 1px solid #ccc;
+            padding: 10px;
+            cursor: pointer;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;  /* Center buttons horizontally */
+            margin-top: 20px;
+            gap: 20px; /* Add space between buttons */
+        }
+
+        /* Style the buttons */
+        .center-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        /* Add hover effect */
+        .center-button:hover {
+            background-color: #0056b3;
+        }
+        .center-button.selected {
+            background-color: gray !important;  /* Ensure this has higher precedence */
+            color: white !important;  /* Text color for better contrast */
+        }
+        .submit-button {
+        padding: 10px 20px; /* Top/bottom and left/right padding */
+        border: none; /* Remove border */
+        border-radius: 5px; /* Rounded corners for the button */
+        background-color: #007bff; /* Bootstrap primary color */
+        color: white; /* White text */
+        cursor: pointer; /* Pointer on hover */
+        transition: background-color 0.3s; /* Smooth transition for hover effect */
+        }
+
+        .submit-button:hover {
+            background-color: #0056b3; /* Darker shade on hover */
+        }
+
+    </style>
+
+</head>
+<body>
+<div class="container">
+    <div class="text-center mt-4">
+        <h1 class="display-4">Tram Line in Vienna</h1>
+    </div>
+</div>
+<div class="container text-center mt-5">
+    <h1 class="custom-title">Upload the File</h1>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <!-- Change accept=".csv" to accept=".yaml" to allow .yaml files -->
+            <input type="file" class="form-control" id="fileUpload" name="file" accept=".yaml" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Upload</button>
+    </form>
+</div>
+<!-- Add a section to select an existing CSV; OPTIONAL -->
+<div class="container text-center mt-5">
+    <h1 class="custom-title">Or Select an Existing CSV</h1>
+    <form action="/use_existing_csv" method="post">
+    <label for="csv_file">Select an existing CSV:</label>
+    <select name="csv_file" id="csv_file">
+        <!-- Dynamically list available CSV files from the passed list -->
+        {% for file in csv_files %}
+            <option value="{{ file }}">{{ file }}</option>
+        {% endfor %}
+    </select>
+    <input type="submit" value="Use Selected CSV">
+</form>
+
+</div>
+<div class="container">
+    <h1 class="text-center mt-5">Choose which data you want to see!</h1>
+<div class="button-container">
+    <button class="center-button" onclick="toggleButtonSelection(this)">Temperature</button>
+    <button class="center-button" onclick="toggleButtonSelection(this)">Multiple</button>
+    <button class="center-button" onclick="toggleButtonSelection(this)">Traffic</button>
+</div>
+
+<div class="container">
+    <h1 class="text-center mt-5">Choose which discovery algorithm you want!</h1>
+</div>
+
+<div class="d-flex">
+    <div class="flex-grow-1 p-3 d-flex flex-column align-items-center">
+        <button class="btn btn-primary" onclick="showButtons('processDiscovery')">Process Discovery</button>
+        <div class="hidden-buttons" id="buttons-processDiscovery" style="display: none;">
+            <button class="btn btn-secondary circular-button" onclick="selectButton1(this)">Alpha miner</button>
+            <button class="btn btn-secondary circular-button" onclick="selectButton1(this)">Inductive miner</button>
+            <button class="btn btn-secondary circular-button" onclick="selectButton1(this)">Directly Followed Graph</button>
+        </div>
+    </div>
+
+    <div class="hidden-buttons" id="dfg-options" style="display: none;">
+        <button class="btn btn-secondary" onclick="selectDFGVariant('FREQUENCY')">FREQUENCY</button>
+        <button class="btn btn-secondary" onclick="selectDFGVariant('PERFORMANCE')">PERFORMANCE</button>
+    </div>
+
+    <div class="flex-grow-1 p-3 d-flex flex-column align-items-center">
+        <button class="btn btn-primary" onclick="showButtons('clustering')">Clustering</button>
+        <div class="hidden-buttons" id="buttons-clustering" style="display: none;">
+            <button class="btn btn-secondary circular-button" onclick="selectButton2(this)">K means</button>
+            <button class="btn btn-secondary circular-button" onclick="selectButton2(this)">Agglomerative</button>
+        </div>
+    </div>
+</div>
+
+{#<form id="dfg-form" action="/run_dfg" method="POST">#}
+{#    <input type="hidden" name="dfg_variant" id="dfg-variant" value="">#}
+{#    <input type="hidden" name="FILENAME" value="path_to_your_file.csv">#}
+{#</form>#}
+{#    <div class="button-container">#}
+{#    <button class="center-button" onclick="submitForm()">Submit</button>#}
+{#    </div>#}
+   <div class="form-container">
+    <form id="submitForm" action="/submit" method="POST" onsubmit="submitForm()">
+        <input type="hidden" name="selected_value" value="" id="selectedValueInput">
+        <input type="hidden" name="selected_value1" value="" id="selectedValue1Input">
+        <input type="hidden" name="selected_value2" value="" id="selectedValue2Input">
+        <input type="hidden" name="selected_value3" value="" id="selectedValue3Input">
+        <input type="hidden" name="dfg_variant" id="dfg-variant" value="">
+        <button type="submit" class="submit-button">Submit</button>
+    </form>
+</div>
+</div>
+
+
+<!-- Hidden input to hold selected button value -->
+{#<form id="selectedButtonForm" action="/submit" method="post" class="text-center mt-3">#}
+{#    <input type="hidden" id="selected_value" name="selectedValue1" value="">#}
+{#    <input type="hidden" id="selected_value2" name="selectedValue2" value="">#}
+{#    <input type="hidden" id="selected_value1" name="selectedValue1" value="">#}
+{#    <input type="hidden" id="selected_value1" name="selectedValue1" value="">#}
+{#    <button type="submit" class="btn btn-success">Submit Selected</button> <!-- Submit button for selected value -->#}
+{#</form>#}
+
+<script>
+    let selected_value = "";    // Data to cluster (e.g., "Temperature", "Traffic")
+    let selected_value1 = "";   // Process discovery (e.g., "Alpha miner")
+    let selected_value2 = "";   // Clustering (e.g., "K-means")
+    let selected_value3 = "";   // Submit action (can be empty or used for further selection)
+
+    function showButtons(buttonType) {
+    // Get the specific hidden buttons container
+    const buttonContainer = document.getElementById('buttons-' + buttonType);
+
+    // Toggle the display property
+    if (buttonContainer.style.display === 'block') {
+        buttonContainer.style.display = 'none'; // Hide if currently visible
+    } else {
+        buttonContainer.style.display = 'block'; // Show if currently hidden
+        }
+    }
+
+    function toggleButtonSelection(selectedButton) {
+    // Get all buttons with the class 'center-button'
+        const buttons = document.querySelectorAll('.center-button');
+        // Remove 'selected' class from all buttons
+        buttons.forEach(button => button.classList.remove('selected'));
+        // Add 'selected' class to the clicked button
+        selected_value = selectedButton.innerText;
+        selectedButton.classList.add('selected');
+        console.log("Button selected:", selectedButton.innerText);
+    }
+    // Example button selection functions remain the same
+    function selectButton1(button) {
+        const buttons = document.querySelectorAll('#buttons-processDiscovery .circular-button');
+
+        // Deselect all buttons first
+        buttons.forEach(btn => {
+            btn.classList.remove('selected');
+        });
+
+        // Select the clicked button
+        button.classList.add('selected');
+        selected_value1 = button.innerText;
+        console.log("Button selected:", button.innerText);
+
+        // If Directly Followed Graph is clicked, show the DFG options
+        if (button.innerText === "Directly Followed Graph") {
+            document.getElementById('dfg-options').style.display = 'block';
+        } else {
+            document.getElementById('dfg-options').style.display = 'none';  // Hide if not selected
+        }
+    }
+    function selectButton2(button) {
+        const buttons = document.querySelectorAll('#buttons-clustering .circular-button');
+
+        // Deselect all buttons first
+        buttons.forEach(btn => {
+            btn.classList.remove('selected');
+        });
+
+        // Select the clicked button
+        button.classList.add('selected');
+        selected_value2 = button.innerText;
+        console.log("Button selected:", button.innerText);
+    }
+
+    function selectDFGVariant(variant) {
+        dfg_variant = variant;
+        document.getElementById('dfg-variant').value = variant;
+
+        // Debugging purpose: log the selected variant
+        console.log("DFG variant selected:", variant);
+    }
+
+    // Function to show DFG options when Directly Followed Graph is clicked
+    function showDFGOptions() {
+        document.getElementById('dfg-options').style.display = 'block';
+    }
+
+    function submitForm() {
+        if (!selected_value2) {
+            alert("Please select a clustering option before submitting.");
+            return false;
+        }
+        document.getElementById('selectedValueInput').value = selected_value;
+        document.getElementById('selectedValue1Input').value = selected_value1;
+        document.getElementById('selectedValue2Input').value = selected_value2;
+        document.getElementById('selectedValue3Input').value = selected_value3;
+        {# debug
+        {#console.log("Submitting with dfg_variant:", document.getElementById('dfg-variant').value);#}
+
+        document.getElementById('submitForm').submit();
+
+        {#console.log("Form submitted with values:", selected_value, selected_value1, selected_value2, selected_value3);#}
+
+    }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
