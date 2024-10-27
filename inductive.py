@@ -21,29 +21,25 @@ from pm4py.algo.discovery.inductive import algorithm as inductive_miner
 from pm4py.algo.discovery.dfg import algorithm as dfg_discovery
 from pm4py.visualization.dfg import visualizer as dfg_visualization
 from pm4py.visualization.petri_net import visualizer as pn_visualizer
-from pm4py.visualization.decisiontree import visualizer as tree_visualizer
-from pm4py.algo.decision_mining import algorithm as decision_mining
-from pm4py.objects.log.util import dataframe_utils
-# from pm4py.algo.discovery.inductive import factory as im_factory
 from pm4py.objects.conversion.log import converter as log_converter
 from pm4py.objects.conversion.process_tree import converter as pt_converter
 from pm4py.visualization.process_tree import visualizer as pt_visualization
 import os
 import time
+from temp_delay import temp_delay
 
-def inductive(FILENAME, submit):
+
+def inductive(FILENAME, parameter, submit):
     df = pd.read_csv(FILENAME)
     df = df.rename(columns={'label': 'concept:name', "time:timestamp": "timestamp"})
     df['timestamp'] = pd.to_datetime(df['timestamp'])
     df = df.drop_duplicates()
 
-    parameters = {log_converter.Variants.TO_EVENT_LOG.value.Parameters.CASE_ID_KEY: 'case_id'}
+    parameters = {log_converter.Variants.TO_EVENT_LOG.value.Parameters.CASE_ID_KEY: 'case_id',  "noise_threshold": parameter}
     event_log = log_converter.apply(df, parameters=parameters)
-    process_tree = inductive_miner.apply(event_log)
+    process_tree = inductive_miner.apply(event_log, parameters=parameters)
 
-    # dfg = dfg_discovery.apply(event_log)
-    # gviz = dfg_visualization.apply(dfg, variant="frequency")
-    # graphs_visualizer.view(gviz)
+    gviz = None
 
     # Discover Petri net using Inductive Miner
     net, initial_marking, final_marking = pt_converter.apply(process_tree)
@@ -61,8 +57,9 @@ def inductive(FILENAME, submit):
     return image_path
 
 if __name__ == '__main__':
-    FILENAME = inductive("input_file.csv", "K means")
-    submit = "Submit Selected"  # Example selected value
-    image_path = inductive(FILENAME, submit)  # Example clustering algorithm
+    FILENAME = temp_delay("input_file.csv", "K means", 1)
+    parameter = 0.2  # Example noise threshold parameter
+    image_path = inductive(FILENAME, parameter, submit="Submit Selected")
 
     print(f"Inductive miner image created at : {image_path}")
+

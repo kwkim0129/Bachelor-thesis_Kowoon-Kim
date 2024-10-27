@@ -46,7 +46,7 @@ def dfg(FILENAME, submit, dfg_var):
     return image_path
 
 if __name__ == '__main__':
-    FILENAME = temp_delay("input_file.csv", "K means")
+    FILENAME = temp_delay("input_file.csv", "K means", 1)
     # clustering = "K means"  # Example clustering algorithm
     submit = "Submit Selected"  # Example selected value
     dfg_var = "FREQUENCY"
