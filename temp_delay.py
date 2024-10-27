@@ -199,5 +199,3 @@ def temp_delay(csvfile, clustering, clusters):
 
 if __name__ == "__main__":
     temp_delay('your_csv_file.csv', 'K means')  # Replace with your actual file and method
-
-
