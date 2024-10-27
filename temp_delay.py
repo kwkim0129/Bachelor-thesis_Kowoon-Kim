@@ -44,7 +44,7 @@ def temp_delay(csvfile, clustering, clusters):
         scaler_a7 = StandardScaler()
         X_a7_scaled = scaler_a7.fit_transform(df_a7[['temp_value']])
 
-        # Choose clustering method based on the 'clustering' variable
+        # Choose clustering method based on the clusterin variable
         if clustering == "K means":
             kmeans_a7 = KMeans(n_clusters=clusters, random_state=42)
 
@@ -54,7 +54,7 @@ def temp_delay(csvfile, clustering, clusters):
             centroids_a7 = kmeans_a7.cluster_centers_
             centroid_means_a7 = np.mean(centroids_a7, axis=1)
 
-            # Sort the centroid means to identify relative cluster labels (low, moderate, high)
+            # Sort the centroid means to identify relative cluster labels 
             sorted_cluster_indices_a7 = np.argsort(centroid_means_a7)
 
             # dynamic names to clusters based on sorted centroids
@@ -63,7 +63,7 @@ def temp_delay(csvfile, clustering, clusters):
                 # Mask to filter the rows for the current cluster
                 cluster_mask = (df_a7['cluster_label'] == cluster_label)
 
-                # Calculate min and max temp_value for the current cluster for the naming
+                # min and max temp_value for the current cluster for the naming
                 min_value = df_a7.loc[cluster_mask, 'temp_value'].min()
                 max_value = df_a7.loc[cluster_mask, 'temp_value'].max()
 
@@ -75,10 +75,9 @@ def temp_delay(csvfile, clustering, clusters):
             a7_cluster_names = {0: 'Cluster 1', 1: 'Cluster 2', 2: 'Cluster 3'}
 
         elif clustering == "DBSCAN":
-            dbscan_a7 = DBSCAN(eps=clusters, min_samples=5)  # You can adjust eps and min_samples as needed
+            dbscan_a7 = DBSCAN(eps=clusters, min_samples=5) 
 
             df_a7['cluster_label'] = dbscan_a7.fit_predict(X_a7_scaled)
-            # Get the unique cluster labels (ignoring noise points labeled as -1)
             unique_clusters_a7 = np.unique(df_a7['cluster_label'])
             unique_clusters_a7 = unique_clusters_a7[unique_clusters_a7 != -1]  # Exclude noise (-1)
 
@@ -86,36 +85,26 @@ def temp_delay(csvfile, clustering, clusters):
                 print(
                     f"Warning: DBSCAN found only {len(unique_clusters_a7)} a7 clusters. Adjusting cluster names accordingly.")
 
-            # Get the mean values for each cluster (ignoring the noise cluster)
             a7_cluster_names = {}
             for cluster_label in unique_clusters_a7:
                 cluster_mask = (df_a7['cluster_label'] == cluster_label)
 
-                # Use the mask to select rows from X_a7_scaled
-                cluster_points = X_a7_scaled[cluster_mask]  # This gives the scaled points for the current cluster
-
-                # If you need to work with the temp_value specifically, you need to use df_a7
+                cluster_points = X_a7_scaled[cluster_mask]  
                 temp_values = df_a7.loc[cluster_mask, 'temp_value']
 
-                # Now you can calculate min and max values from the original temp_value column
                 min_value = temp_values.min()
                 max_value = temp_values.max()
 
-                # Create the cluster name dynamically
                 a7_cluster_names[cluster_label] = f"temp_{min_value:.2f}-{max_value:.2f}"
-            # df_a7['cluster_name'] = df_a7['cluster_label'].map(a7_cluster_names)
 
         else:
             print(f"Unsupported clustering method: {clustering}")
 
-        # Apply the mapping to the cluster labels
         df_a7['cluster_name'] = df_a7['cluster_label'].replace(a7_cluster_names)
     else:
         print("Skipping clustering for df_a7 due to empty dataset.")
 
-    # Cluster according to the input parameter
     if not df_a1.empty:
-        # Standardize the data
         scaler_a1 = StandardScaler()
         X_a1_scaled = scaler_a1.fit_transform(df_a1[['delay']])
 
@@ -147,12 +136,10 @@ def temp_delay(csvfile, clustering, clusters):
                 a1_cluster_names = {0: 'Cluster 1', 1: 'Cluster 2', 2: 'Cluster 3'}
 
         elif clustering == "DBSCAN":
-            dbscan_a1 = DBSCAN(eps=0.1, min_samples=5)  # You can adjust eps and min_samples as needed
-
+            dbscan_a1 = DBSCAN(eps=0.1, min_samples=5)  
             df_a1['cluster_label'] = dbscan_a1.fit_predict(X_a1_scaled)
-            # Get the unique cluster labels (ignoring noise points labeled as -1)
             unique_clusters_a1 = np.unique(df_a1['cluster_label'])
-            unique_clusters_a1 = unique_clusters_a1[unique_clusters_a1 != -1]  # Exclude noise (-1)
+            unique_clusters_a1 = unique_clusters_a1[unique_clusters_a1 != -1]  
 
             if len(unique_clusters_a1) < 3:
                 print(
@@ -162,7 +149,7 @@ def temp_delay(csvfile, clustering, clusters):
             for cluster_label in unique_clusters_a1:
                 cluster_mask = (df_a1['cluster_label'] == cluster_label)
 
-                cluster_points = X_a1_scaled[cluster_mask]  # This gives the scaled  points for the current cluster
+                cluster_points = X_a1_scaled[cluster_mask] 
 
                 delay_values = df_a1.loc[cluster_mask, 'delay']
 
@@ -174,7 +161,7 @@ def temp_delay(csvfile, clustering, clusters):
             else:
                 print(f"Unsupported clustering method: {clustering}")
 
-            # Apply the mapping to the cluster labels
+            
         df_a1['cluster_name'] = df_a1['cluster_label'].replace(a1_cluster_names)
     else:
         print("Skipping clustering for df_a1 due to empty dataset.")
