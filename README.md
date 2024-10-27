@@ -7,8 +7,6 @@ Description of the files
 - alpha_temp => extracts dfg 
 - inductive => extracts petri net with inductive miner
 - alpha => extracts petri net with alpha miner 
-- agglo => agglomerative clustering
-- dbscan => clustering with dbscan 
 - prepareforpd => example for creating csv with clusters that have columns required for process discovery algorithm
 - templates => main.html and direct_graph.html which control style of my website
 - static => where image files go after process model has been created
