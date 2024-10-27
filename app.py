@@ -7,6 +7,9 @@ from csvcon import yaml_to_csv
 from temp_delay import temp_delay
 from alpha_temp import dfg
 from mult_delay import mult_delay
+from flask import render_template
+from markupsafe import Markup
+import yaml
 
 app = Flask(__name__)
 
@@ -37,9 +40,19 @@ def use_existing_csv():
     global FILENAME
     FILENAME = file_path
 
-    # For now just return a confirmation message
+    # Do something with the selected CSV file (e.g., process it, display its content, etc.)
+    # For now, just return a confirmation message
     return f"Selected file: {file_path}"
 
+@app.route('/yaml')
+def yaml_view():
+    # page that shows raw yaml file
+    with open("vienna-line-71.xes.yaml", "r") as file:
+        yaml_content = file.read()
+
+    formatted_yaml = Markup("<pre>" + yaml_content + "</pre>")
+
+    return render_template('yaml.html', yaml_data=formatted_yaml)
 
 # upload yaml
 @app.route('/upload', methods=['POST'])
@@ -60,6 +73,7 @@ def upload_file():
             return render_template('main.html', message="CSV file uploaded successfully!")
 
         elif file_extension == 'yaml':
+            # Save the yaml file
             file_path = os.path.join(UPLOAD_FOLDER, file.filename)
             file.save(file_path)
 
@@ -69,7 +83,8 @@ def upload_file():
             yaml_to_csv(file_path, csv_filename)
 
             FILENAME=csv_filename
-          
+            # print(FILENAME)
+            # file.save(file_path)
             return render_template('main.html', message="File uploaded and converted successfully!")
     return "Invalid file type", 400
 
