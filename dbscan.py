@@ -8,7 +8,6 @@ df = pd.read_csv("weather_only.csv")
 # Selecting numeric columns for clustering
 X = df[['temp_value']] #'temp_value', 'pressure_value', 'humidity_value',
 
-# Handle missing values (e.g., replace NaNs with column means)
 X = X.fillna(X.mean())
 
 # Normalize the data
@@ -23,7 +22,7 @@ clusters = dbscan.fit_predict(X_scaled)
 df['cluster'] = clusters
 unique_clusters = set(clusters) - {-1}  # Exclude noise points (-1)
 
-# Print the number of valid clusters found (excluding noise)
+# Print the number of valid clusters found 
 print(f"Number of clusters found: {len(unique_clusters)}")
 # Display the resulting clusters
 print(df[['case_id', 'label', 'temp_value', 'cluster']])
