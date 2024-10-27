@@ -26,6 +26,9 @@
             align-items: center; /* Center align the buttons */
             margin-top: 20px; /* Add some margin at the top for spacing */
         }
+        .hidden-buttons.show {
+            display: flex;
+        }
         .nav-button {
             width: 100%; /* Make nav buttons full width */
         }
@@ -95,6 +98,7 @@
         }
 
     </style>
+
 </head>
 <body>
 <div class="container">
@@ -141,51 +145,80 @@
 
 <div class="d-flex">
     <div class="flex-grow-1 p-3 d-flex flex-column align-items-center">
-        <button class="btn btn-primary" onclick="showButtons('processDiscovery')">Process Discovery</button>
-        <div class="hidden-buttons" id="buttons-processDiscovery" style="display: none;">
-            <button class="btn btn-secondary circular-button" onclick="selectButton1(this)">Alpha miner</button>
-            <button class="btn btn-secondary circular-button" onclick="selectButton1(this)">Inductive miner</button>
-            <button class="btn btn-secondary circular-button" onclick="selectButton1(this)">Directly Followed Graph</button>
+    <button class="btn btn-primary" onclick="showButtons('processDiscovery')">Process Discovery</button>
+    <div class="hidden-buttons" id="buttons-processDiscovery" style="display: none;">
+        <button class="btn btn-secondary circular-button" onclick="selectButton1(this)">Alpha miner</button>
+        <div class="d-flex align-items-center">
+            <button class="btn btn-secondary circular-button" onclick="selectButton1(this)">Inductive Miner</button>
+            <div class="ml-2"> <!-- Same container as Inductive Miner button -->
+                <button class="btn btn-secondary" onclick="selectInductiveVariant('0.1')">n = 0.1</button>
+                <button class="btn btn-secondary" onclick="selectInductiveVariant('0.2')">n = 0.2</button>
+                <button class="btn btn-secondary" onclick="selectInductiveVariant('0.3')">n = 0.3</button>
+            </div>
         </div>
-    </div>
-    <div class="flex-grow-1 p-3 d-flex flex-column align-items-center">
-        <button class="btn btn-primary" onclick="showButtons('clustering')">Clustering</button>
-        <div class="hidden-buttons" id="buttons-clustering" style="display: none;">
-            <button class="btn btn-secondary circular-button" onclick="selectButton2(this)">K means</button>
-            <button class="btn btn-secondary circular-button" onclick="selectButton2(this)">Agglomerative</button>
+        <div class="d-flex align-items-center">
+            <button class="btn btn-secondary circular-button" onclick="selectButton1(this)">Directly Followed Graph</button>
+            <div class="ml-2"> {# same container as DFG button #}
+                <button class="btn btn-secondary" onclick="selectDFGVariant('FREQUENCY')">FREQUENCY</button>
+                <button class="btn btn-secondary" onclick="selectDFGVariant('PERFORMANCE')">PERFORMANCE</button>
+            </div>
         </div>
     </div>
 </div>
 
+
+    <div class="flex-grow-1 p-3 d-flex flex-column align-items-center">
+    <button class="btn btn-primary" onclick="showButtons('clustering')">Clustering</button>
+    <div class="hidden-buttons" id="buttons-clustering" style="display: none; flex-direction: row;">
+        <div style="display: flex; align-items: center;">
+            <button class="btn btn-secondary circular-button" onclick="selectButton2(this)">K means</button>
+            <div class="hidden-options" id="kmeans-options" style="display: none; margin-left: 10px;">
+                <button class="btn btn-secondary" onclick="selectKMeansVariant('3')">K = 3</button>
+                <button class="btn btn-secondary" onclick="selectKMeansVariant('5')">K = 5</button>
+                <button class="btn btn-secondary" onclick="selectKMeansVariant('7')">K = 7</button>
+            </div>
+        </div>
+        <button class="btn btn-secondary circular-button" onclick="selectButton2(this)">Agglomerative</button>
+        <button class="btn btn-secondary circular-button" onclick="selectButton2(this)">DBSCAN</button>
+             <div class="hidden-options" id="dbscan-options" style="display: none; margin-top: 10px;">
+                <button class="btn btn-secondary" onclick="selectDBSCANVariant('0.05')">eps = 0.05</button>
+                <button class="btn btn-secondary" onclick="selectDBSCANVariant('0.1')">eps = 0.1</button>
+                <button class="btn btn-secondary" onclick="selectDBSCANVariant('1.0')">eps = 1.0</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{#<form id="dfg-form" action="/run_dfg" method="POST">#}
+{#    <input type="hidden" name="dfg_variant" id="dfg-variant" value="">#}
+{#    <input type="hidden" name="FILENAME" value="path_to_your_file.csv">#}
+{#</form>#}
 {#    <div class="button-container">#}
 {#    <button class="center-button" onclick="submitForm()">Submit</button>#}
 {#    </div>#}
    <div class="form-container">
     <form id="submitForm" action="/submit" method="POST" onsubmit="submitForm()">
-        <input type="hidden" name="selected_value" value="" id="selectedValueInput">
-        <input type="hidden" name="selected_value1" value="" id="selectedValue1Input">
-        <input type="hidden" name="selected_value2" value="" id="selectedValue2Input">
-        <input type="hidden" name="selected_value3" value="" id="selectedValue3Input">
+        <input type="hidden" name="selected_value" id="selectedValueInput" value="">
+        <input type="hidden" name="selected_value1" id="selectedValue1Input" value="">
+        <input type="hidden" name="selected_value2" id="selectedValue2Input" value="">
+        <input type="hidden" name="selected_value3" id="selectedValue3Input" value="">
+        <input type="hidden" name="dfg_variant" id="dfg-variant" value="">
+        <input type="hidden" name="inductive_variant" id="inductive-variant" value="">
+        <input type="hidden" id="kmeansValue" name="selectedKMeansValue" value="3"> <!-- Default value is 3 -->
+        <input type="hidden" id="dbscanVar" name="selectDBSCANValue" value="0.5">
         <button type="submit" class="submit-button">Submit</button>
     </form>
 </div>
 </div>
 
 
-<!-- Hidden input to hold selected button value -->
-{#<form id="selectedButtonForm" action="/submit" method="post" class="text-center mt-3">#}
-{#    <input type="hidden" id="selected_value" name="selectedValue1" value="">#}
-{#    <input type="hidden" id="selected_value2" name="selectedValue2" value="">#}
-{#    <input type="hidden" id="selected_value1" name="selectedValue1" value="">#}
-{#    <input type="hidden" id="selected_value1" name="selectedValue1" value="">#}
-{#    <button type="submit" class="btn btn-success">Submit Selected</button> <!-- Submit button for selected value -->#}
-{#</form>#}
-
 <script>
     let selected_value = "";    // Data to cluster (e.g., "Temperature", "Traffic")
     let selected_value1 = "";   // Process discovery (e.g., "Alpha miner")
     let selected_value2 = "";   // Clustering (e.g., "K-means")
     let selected_value3 = "";   // Submit action (can be empty or used for further selection)
+    let selectedKMeansValue = 3;
+    let selectDBSCANValue = 0.5;
 
     function showButtons(buttonType) {
     // Get the specific hidden buttons container
@@ -198,6 +231,7 @@
         buttonContainer.style.display = 'block'; // Show if currently hidden
         }
     }
+
     function toggleButtonSelection(selectedButton) {
     // Get all buttons with the class 'center-button'
         const buttons = document.querySelectorAll('.center-button');
@@ -221,27 +255,106 @@
         button.classList.add('selected');
         selected_value1 = button.innerText;
         console.log("Button selected:", button.innerText);
+
+        // If Directly Followed Graph is clicked, show the DFG options
+        if (button.innerText === "Directly Followed Graph") {
+            document.getElementById('dfg-options').style.display = 'block';
+        } else {
+            document.getElementById('dfg-options').style.display = 'none';  // Hide if not selected
+        }
     }
+
     function selectButton2(button) {
         const buttons = document.querySelectorAll('#buttons-clustering .circular-button');
 
         // Deselect all buttons first
-        buttons.forEach(btn => {
-            btn.classList.remove('selected');
-        });
+        buttons.forEach(btn => btn.classList.remove('selected'));
 
         // Select the clicked button
         button.classList.add('selected');
         selected_value2 = button.innerText;
         console.log("Button selected:", button.innerText);
+
+        if (button.innerText === "K means") {
+            const kMeansOptionsContainer = document.getElementById('kmeans-options');
+            kMeansOptionsContainer.style.display = 'block'; // Show options when K means is clicked
+            document.getElementById('dbscan-options').style.display = 'none'; // Hide DBSCAN options
+        }
+        // Show or hide DBSCAN options
+        else if (button.innerText === "DBSCAN") {
+            const dbscanOptionsContainer = document.getElementById('dbscan-options');
+            dbscanOptionsContainer.style.display = 'block'; // Show options when DBSCAN is clicked
+            document.getElementById('kmeans-options').style.display = 'none'; // Hide K means options
+        }
+        // Hide options if any other button is selected
+        else {
+            document.getElementById('kmeans-options').style.display = 'none';
+            document.getElementById('dbscan-options').style.display = 'none';
+        }
     }
+
+    function selectKMeansVariant(kValue) {
+        {#kmeans_var = variant;#}
+        {#document.getElementById('kmeans-options').value = variant;#}
+        {#console.log("K Means variant selected:", variant);#}
+        selectedKMeansValue = kValue;
+        console.log("Selected K means cluster count:", selectedKMeansValue);
+        document.getElementById('kmeansValue').value = selectedKMeansValue;
+    }
+
+    function passKMeansParameterToBackend() {
+        console.log("K means parameter to pass:", selectedKMeansValue);
+    }
+
+    function selectDBSCANVariant(variant) {
+        selectDBSCANValue = variant;
+        console.log("DBSCAN eps selected:", selectDBSCANValue);
+        document.getElementById('dbscanVar').value = selectDBSCANValue;
+    }
+
+    function passDBSCANParameterToBackend() {
+        console.log("DBSCAN parameter to pass:", selectDBSCANValue);
+    }
+
+    function selectDFGVariant(variant) {
+        dfg_variant = variant;
+        document.getElementById('dfg-variant').value = variant;
+
+        // Debugging purpose: log the selected variant
+        console.log("DFG variant selected:", variant);
+    }
+
+    // Function to show DFG options when Directly Followed Graph is clicked
+    function showDFGOptions() {
+        document.getElementById('dfg-options').style.display = 'block';
+    }
+
+    function selectInductiveVariant(variant) {
+        inductive_variant = variant;
+        document.getElementById('inductive-variant').value = variant;
+
+        // Debugging purpose: log the selected variant
+        console.log("Inductive variant selected:", variant);
+    }
+    function showIndOptions() {
+        document.getElementById('ind-options').style.display = 'block';
+    }
+
     function submitForm() {
+        if (!selected_value1 && !selected_value2 && !selected_value) {
+            alert("Please select all options before submitting.");
+            return false;
+        }
         document.getElementById('selectedValueInput').value = selected_value;
         document.getElementById('selectedValue1Input').value = selected_value1;
         document.getElementById('selectedValue2Input').value = selected_value2;
         document.getElementById('selectedValue3Input').value = selected_value3;
-        console.log("Form submitted with values:", selected_value, selected_value1, selected_value2, selected_value3);
 
+        {#console.log("Submitting with values:", selected_value, selected_value1, selected_value2, selected_value3);#}
+
+        document.getElementById('submitForm').submit();
+
+        {#console.log("Form submitted with values:", selected_value, selected_value1, selected_value2, selected_value3);#}
     }
 </script>
 
