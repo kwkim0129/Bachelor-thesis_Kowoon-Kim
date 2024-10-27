@@ -37,8 +37,7 @@ def use_existing_csv():
     global FILENAME
     FILENAME = file_path
 
-    # Do something with the selected CSV file (e.g., process it, display its content, etc.)
-    # For now, just return a confirmation message
+    # For now just return a confirmation message
     return f"Selected file: {file_path}"
 
 
@@ -61,7 +60,6 @@ def upload_file():
             return render_template('main.html', message="CSV file uploaded successfully!")
 
         elif file_extension == 'yaml':
-            # Save the yaml file
             file_path = os.path.join(UPLOAD_FOLDER, file.filename)
             file.save(file_path)
 
@@ -71,8 +69,7 @@ def upload_file():
             yaml_to_csv(file_path, csv_filename)
 
             FILENAME=csv_filename
-            # print(FILENAME)
-            # file.save(file_path)
+          
             return render_template('main.html', message="File uploaded and converted successfully!")
     return "Invalid file type", 400
 
