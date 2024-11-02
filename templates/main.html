@@ -96,10 +96,48 @@
         .submit-button:hover {
             background-color: #0056b3; /* Darker shade on hover */
         }
+    .tooltip {
+      position: relative;
+      display: inline-block;
+    }
 
+    /* Tooltip text */
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 140px;
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      padding: 8px;
+      border-radius: 5px;
+
+      /* Position the tooltip text */
+      position: absolute;
+      z-index: 1;
+      bottom: 125%; /* Adjust to position above the button */
+      left: 50%;
+      transform: translateX(-50%);
+
+      /* Fade-in effect */
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
+    {#input, textarea {#}
+    {#    width: 100%;#}
+    {#    padding: 10px;#}
+    {#    margin: 8px 0;#}
+    {#    border: 1px solid #ccc;#}
+    {#    border-radius: 4px;#}
+    {#    box-sizing: border-box;#}
+    {#}#}
     </style>
 
 </head>
+
 <body>
 <div class="container">
     <div class="text-center mt-4">
@@ -120,7 +158,7 @@
 </div>
 <!-- Add a section to select an existing CSV; OPTIONAL -->
 <div class="container text-center mt-5">
-    <h1 class="custom-title">Or Select an Existing CSV</h1>
+    <h1 class="custom-title">Or select an existing CSV</h1>
     <form action="/use_existing_csv" method="post">
     <label for="csv_file">Select an existing CSV:</label>
     <select name="csv_file" id="csv_file">
@@ -130,6 +168,16 @@
     </select>
     <input type="submit" value="Use Selected CSV">
 </form>
+<br>
+<br>
+
+<div style="border: 1px solid #ccc; padding: 10px; border-radius: 5px; font-size: 20px; text-align: center;">
+    <p id="info-text" style="font-size: 20px;">
+        The YAML file has weather data, traffic information, construction sites near the tram stops, and delay data.
+        <br>
+        You can click one of the buttons below to explore the relationship with delays at tram stops in Vienna.
+    </p>
+</div>
 
 </div>
 <div class="container">
@@ -138,6 +186,19 @@
     <button class="center-button" onclick="toggleButtonSelection(this)">Temperature</button>
     <button class="center-button" onclick="toggleButtonSelection(this)">Multiple</button>
     <button class="center-button" onclick="toggleButtonSelection(this)">Traffic</button>
+</div>
+
+<br>
+<br>
+
+<div style="border: 1px solid #ccc; padding: 10px; border-radius: 5px; font-size: 20px; text-align: center;">
+    <p id="info-text" style="font-size: 20px;">
+        Below you can choose a clustering and a process discovery algorithm based on PM4PY.
+        <br>
+        When you click on each algorithm, you can also choose a parameter.
+        <br>
+        According to the parameters, the process model will look a bit different.
+    </p>
 </div>
 
 <div class="container">
@@ -172,7 +233,7 @@
     <button class="btn btn-primary" onclick="showButtons('clustering')">Clustering</button>
     <div class="hidden-buttons" id="buttons-clustering" style="display: none; flex-direction: row;">
         <div style="display: flex; align-items: center;">
-            <button class="btn btn-secondary circular-button" onclick="selectButton2(this)">K means</button>
+        <button class="btn btn-secondary circular-button" onclick="selectButton2(this)">K means</button>
             <div class="hidden-options" id="kmeans-options" style="display: none; margin-left: 10px;">
                 <button class="btn btn-secondary" onclick="selectKMeansVariant('3')">K = 3</button>
                 <button class="btn btn-secondary" onclick="selectKMeansVariant('5')">K = 5</button>
@@ -180,6 +241,11 @@
             </div>
         </div>
         <button class="btn btn-secondary circular-button" onclick="selectButton2(this)">Agglomerative</button>
+            <div class="hidden-options" id="agglo-options" style="display: none; margin-left: 10px;">
+                <button class="btn btn-secondary" onclick="selectAggloVariant('2')">n = 2</button>
+                <button class="btn btn-secondary" onclick="selectAggloVariant('4')">n = 4</button>
+                <button class="btn btn-secondary" onclick="selectAggloVariant('6')">n = 6</button>
+            </div>
         <button class="btn btn-secondary circular-button" onclick="selectButton2(this)">DBSCAN</button>
              <div class="hidden-options" id="dbscan-options" style="display: none; margin-top: 10px;">
                 <button class="btn btn-secondary" onclick="selectDBSCANVariant('0.05')">eps = 0.05</button>
@@ -207,6 +273,7 @@
         <input type="hidden" name="inductive_variant" id="inductive-variant" value="">
         <input type="hidden" id="kmeansValue" name="selectedKMeansValue" value="3"> <!-- Default value is 3 -->
         <input type="hidden" id="dbscanVar" name="selectDBSCANValue" value="0.5">
+        <input type="hidden" id="aggloVar" name="selectedAggloValue" value="2">
         <button type="submit" class="submit-button">Submit</button>
     </form>
 </div>
@@ -220,6 +287,7 @@
     let selected_value3 = "";   // Submit action (can be empty or used for further selection)
     let selectedKMeansValue = 3;
     let selectDBSCANValue = 0.5;
+    let selectedAggloValue = 2;
 
     function showButtons(buttonType) {
     // Get the specific hidden buttons container
@@ -242,7 +310,36 @@
         selected_value = selectedButton.innerText;
         selectedButton.classList.add('selected');
         console.log("Button selected:", selectedButton.innerText);
+
+        updateDBSCANOptions();
     }
+
+    function updateDBSCANOptions() {
+        const dbscanOptionsContainer = document.getElementById('dbscan-options');
+
+        // Clear existing DBSCAN options
+        dbscanOptionsContainer.innerHTML = '';
+
+        // Set DBSCAN options based on the selected_value
+        let dbscanValues = [];
+        if (selected_value === "Temperature") {
+            dbscanValues = [0.05, 0.1, 1.0];
+        } else if (selected_value === "Multiple") {
+            dbscanValues = [0.5, 1.0, 1.5];
+        } else if (selected_value === "Traffic") {
+            dbscanValues = [0.1, 0.3, 0.5];
+        }
+
+        // Generate DBSCAN buttons based on dbscanValues array
+        dbscanValues.forEach(epsValue => {
+            const button = document.createElement('button');
+            button.className = 'btn btn-secondary';
+            button.innerText = `eps = ${epsValue}`;
+            button.onclick = function() { selectDBSCANVariant(epsValue); };
+            dbscanOptionsContainer.appendChild(button);
+        });
+    }
+
     // Example button selection functions remain the same
     function selectButton1(button) {
         const buttons = document.querySelectorAll('#buttons-processDiscovery .circular-button');
@@ -266,38 +363,40 @@
     }
 
     function selectButton2(button) {
-        const buttons = document.querySelectorAll('#buttons-clustering .circular-button');
+    const buttons = document.querySelectorAll('#buttons-clustering .circular-button');
 
-        // Deselect all buttons first
-        buttons.forEach(btn => btn.classList.remove('selected'));
+    // Deselect all buttons first
+    buttons.forEach(btn => btn.classList.remove('selected'));
 
-        // Select the clicked button
-        button.classList.add('selected');
-        selected_value2 = button.innerText;
-        console.log("Button selected:", button.innerText);
+    // Select the clicked button
+    button.classList.add('selected');
+    selected_value2 = button.innerText;
+    console.log("Button selected:", button.innerText);
 
-        if (button.innerText === "K means") {
-            const kMeansOptionsContainer = document.getElementById('kmeans-options');
-            kMeansOptionsContainer.style.display = 'block'; // Show options when K means is clicked
-            document.getElementById('dbscan-options').style.display = 'none'; // Hide DBSCAN options
-        }
-        // Show or hide DBSCAN options
-        else if (button.innerText === "DBSCAN") {
-            const dbscanOptionsContainer = document.getElementById('dbscan-options');
-            dbscanOptionsContainer.style.display = 'block'; // Show options when DBSCAN is clicked
-            document.getElementById('kmeans-options').style.display = 'none'; // Hide K means options
-        }
-        // Hide options if any other button is selected
-        else {
-            document.getElementById('kmeans-options').style.display = 'none';
-            document.getElementById('dbscan-options').style.display = 'none';
-        }
+    if (button.innerText === "K means") {
+        document.getElementById('kmeans-options').style.display = 'block';
+        document.getElementById('dbscan-options').style.display = 'none';
+        document.getElementById('agglo-options').style.display = 'none';
     }
+    else if (button.innerText === "DBSCAN") {
+        document.getElementById('dbscan-options').style.display = 'block';
+        document.getElementById('kmeans-options').style.display = 'none';
+        document.getElementById('agglo-options').style.display = 'none';
+    }
+    else if (button.innerText === "Agglomerative") {
+        document.getElementById('agglo-options').style.display = 'block';
+        document.getElementById('kmeans-options').style.display = 'none';
+        document.getElementById('dbscan-options').style.display = 'none';
+    }
+    // Hide options if any other button is selected
+    else {
+        document.getElementById('kmeans-options').style.display = 'none';
+        document.getElementById('dbscan-options').style.display = 'none';
+        document.getElementById('agglo-options').style.display = 'none';
+    }
+}
 
     function selectKMeansVariant(kValue) {
-        {#kmeans_var = variant;#}
-        {#document.getElementById('kmeans-options').value = variant;#}
-        {#console.log("K Means variant selected:", variant);#}
         selectedKMeansValue = kValue;
         console.log("Selected K means cluster count:", selectedKMeansValue);
         document.getElementById('kmeansValue').value = selectedKMeansValue;
@@ -307,14 +406,24 @@
         console.log("K means parameter to pass:", selectedKMeansValue);
     }
 
-    function selectDBSCANVariant(variant) {
-        selectDBSCANValue = variant;
-        console.log("DBSCAN eps selected:", selectDBSCANValue);
+    function selectDBSCANVariant(epsValue) {
+        selectDBSCANValue = epsValue;
         document.getElementById('dbscanVar').value = selectDBSCANValue;
+        console.log("DBSCAN eps selected:", selectDBSCANValue);
     }
 
     function passDBSCANParameterToBackend() {
         console.log("DBSCAN parameter to pass:", selectDBSCANValue);
+    }
+
+    function selectAggloVariant(variant) {
+        selectedAggloValue = variant;
+        console.log("Agglo n selected:", selectedAggloValue);
+        document.getElementById('aggloVar').value = selectedAggloValue;
+    }
+
+    function passAggloParameterToBackend() {
+        console.log("Agglo parameter to pass:", selectedAggloValue);
     }
 
     function selectDFGVariant(variant) {
