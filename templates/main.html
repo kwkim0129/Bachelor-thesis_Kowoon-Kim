@@ -322,18 +322,14 @@
     function toggleButtonSelection1(selectedButton) {
         const areaButtons = document.querySelectorAll('.area-button-container .center-button');
         areaButtons.forEach(button => button.classList.remove('selected'));
-
-        // Add 'selected' class to the clicked area button and update selectedArea
         selectedButton.classList.add('selected');
-        selectedArea = selectedButton.innerText;  // Store the area name
-        document.getElementById('selectedAreaInput').value = selectedArea; // Update hidden input for area
+        selectedArea = selectedButton.innerText;  
+        document.getElementById('selectedAreaInput').value = selectedArea; 
         console.log("Area selected:", selectedArea);
     }
     function toggleButtonSelection2(selectedButton) {
         const dataButtons = document.querySelectorAll('.center-button');
-        // Remove 'selected' class from all buttons
         {#buttons.forEach(button => button.classList.remove('selected'));#}
-        // Add 'selected' class to the clicked button
         selected_value = selectedButton.innerText;
         selectedButton.classList.add('selected');
         dataButtons.forEach(button => {
@@ -349,10 +345,8 @@
     function updateDBSCANOptions() {
         const dbscanOptionsContainer = document.getElementById('dbscan-options');
 
-        // Clear existing DBSCAN options
         dbscanOptionsContainer.innerHTML = '';
 
-        // Set DBSCAN options based on the selected_value
         let dbscanValues = [];
         if (selected_value === "Temperature") {
             dbscanValues = [0.05, 0.1, 1.0];
