@@ -23,11 +23,8 @@ os.makedirs(CSV_FOLDER, exist_ok=True)
 
 @app.route('/')
 def home():
-    # Get list of CSV files
     csv_files = os.listdir(CSV_FOLDER)
-    # Pass the list of files to the template
     return render_template('main.html', csv_files=csv_files)
-
 
 @app.route('/use_existing_csv', methods=['POST'])
 def use_existing_csv():
@@ -100,7 +97,6 @@ def show_graph():
                            selected_value=selected_value,
                            image_url=image_url)
 
-# button 마다 algorithm 설정해주기
 @app.route('/submit', methods=['POST'])
 def submit():
     print("Request form data:", request.form)
