@@ -86,6 +86,20 @@ def upload_file():
             return render_template('main.html', message="File uploaded and converted successfully!")
     return "Invalid file type", 400
 
+
+@app.route('/direct_graph', methods=['POST'])
+def show_graph():
+    selectedArea = request.form.get('selectedArea')
+    selected_value = request.form.get('selected_value')
+
+    # Image URL could be dynamically generated based on the area and value
+    image_url = '/static/graph_image.png'
+
+    return render_template('direct_graph.html',
+                           selected_area=selectedArea,
+                           selected_value=selected_value,
+                           image_url=image_url)
+
 # button 마다 algorithm 설정해주기
 @app.route('/submit', methods=['POST'])
 def submit():
@@ -101,8 +115,10 @@ def submit():
     selectedKMeansValue = int(request.form.get('selectedKMeansValue', 3))
     selectDBSCANValue = float(request.form.get('selectDBSCANValue', 0.5))
     selectedAggloValue = int(request.form.get('selectedAggloValue', 2))
+    selectedArea = request.form.get('selectedArea', None) # area selection
 
 # debugging purpose
+    print('selectedArea:', selectedArea)  # city center, on the way, zentralfriedhof
     print("selected_value:", selected_value)    # data to see
     print("selected_value1:", selected_value1)  # process discovery
     print("selected_value2:", selected_value2)  # clustering
@@ -121,12 +137,12 @@ def submit():
         td_csv = None
         if selected_value2 == "K means":
             # if k means
-            td_csv = temp_delay(FILENAME, selected_value2, selectedKMeansValue)
+            td_csv = temp_delay(FILENAME, selected_value2, selectedKMeansValue, selectedArea)
         if selected_value2 == "DBSCAN":
             # if dbscan
-            td_csv = temp_delay(FILENAME, selected_value2, selectDBSCANValue)
+            td_csv = temp_delay(FILENAME, selected_value2, selectDBSCANValue, selectedArea)
         if selected_value2 == "Agglomerative":
-            td_csv = temp_delay(FILENAME, selected_value2, selectedAggloValue)
+            td_csv = temp_delay(FILENAME, selected_value2, selectedAggloValue, selectedArea)
         if td_csv is not None:
             if selected_value1 == "Directly Followed Graph":
                 image_path = dfg(td_csv, selected_value3, dfg_variant)
@@ -149,7 +165,7 @@ def submit():
         if selected_value2 == "DBSCAN":
             td_csv = mult_delay(FILENAME, selected_value2, selectDBSCANValue)
         if selected_value2 == "Agglomerative":
-            td_csv = temp_delay(FILENAME, selected_value2, selectedAggloValue)
+            td_csv = mult_delay(FILENAME, selected_value2, selectedAggloValue)
 
         if td_csv is not None:
             if selected_value1 == "Directly Followed Graph":
@@ -182,8 +198,12 @@ def submit():
                 image_path = alpha(td_csv, alpha_variant, selected_value3)
                 image_url = url_for('static', filename=os.path.basename(image_path))
 
-    return render_template('direct_graph.html', image_url=image_url)
-
+    return render_template('direct_graph.html',
+                           image_url=image_url,
+                           selected_value=selected_value,
+                           selectedArea=selectedArea,
+                           selected_value2=selected_value2,
+                           selected_value1=selected_value1)
 
 if __name__ == '__main__':
 
