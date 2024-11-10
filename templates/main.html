@@ -178,14 +178,37 @@
         You can click one of the buttons below to explore the relationship with delays at tram stops in Vienna.
     </p>
 </div>
-
+<br>
+<br>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vienna Tram Lines</title>
+</head>
+<body>
+    <h2>Vienna Tram Lines</h2>
+    <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d68604.85438477677!2d16.411332626570037!3d48.17033646463595!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2skr!4v1731156927141!5m2!1sen!2skr"
+            width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+</body>
+</html>
 </div>
+
+<div class="container">
+    <h1 class="text-center mt-5">Choose the area</h1>
+<div class="button-container area-button-container">
+    <button class="center-button" onclick="toggleButtonSelection1(this)">City Center</button>
+    <button class="center-button" onclick="toggleButtonSelection1(this)">On the way to the city center</button>
+    <button class="center-button" onclick="toggleButtonSelection1(this)">Zentralfriedhof</button>
+</div>
+
 <div class="container">
     <h1 class="text-center mt-5">Choose which data you want to see!</h1>
-<div class="button-container">
-    <button class="center-button" onclick="toggleButtonSelection(this)">Temperature</button>
-    <button class="center-button" onclick="toggleButtonSelection(this)">Multiple</button>
-    <button class="center-button" onclick="toggleButtonSelection(this)">Traffic</button>
+<div class="button-container data-button-container">
+    <button class="center-button" onclick="toggleButtonSelection2(this)">Temperature</button>
+    <button class="center-button" onclick="toggleButtonSelection2(this)">Multiple</button>
+    <button class="center-button" onclick="toggleButtonSelection2(this)">Traffic</button>
 </div>
 
 <br>
@@ -242,9 +265,9 @@
         </div>
         <button class="btn btn-secondary circular-button" onclick="selectButton2(this)">Agglomerative</button>
             <div class="hidden-options" id="agglo-options" style="display: none; margin-left: 10px;">
-                <button class="btn btn-secondary" onclick="selectAggloVariant('2')">n = 2</button>
-                <button class="btn btn-secondary" onclick="selectAggloVariant('4')">n = 4</button>
-                <button class="btn btn-secondary" onclick="selectAggloVariant('6')">n = 6</button>
+                <button class="btn btn-secondary" onclick="selectAggloVariant('3')">n = 3</button>
+                <button class="btn btn-secondary" onclick="selectAggloVariant('5')">n = 5</button>
+                <button class="btn btn-secondary" onclick="selectAggloVariant('7')">n = 7</button>
             </div>
         <button class="btn btn-secondary circular-button" onclick="selectButton2(this)">DBSCAN</button>
              <div class="hidden-options" id="dbscan-options" style="display: none; margin-top: 10px;">
@@ -256,38 +279,33 @@
     </div>
 </div>
 
-{#<form id="dfg-form" action="/run_dfg" method="POST">#}
-{#    <input type="hidden" name="dfg_variant" id="dfg-variant" value="">#}
-{#    <input type="hidden" name="FILENAME" value="path_to_your_file.csv">#}
-{#</form>#}
-{#    <div class="button-container">#}
-{#    <button class="center-button" onclick="submitForm()">Submit</button>#}
-{#    </div>#}
-   <div class="form-container">
-    <form id="submitForm" action="/submit" method="POST" onsubmit="submitForm()">
-        <input type="hidden" name="selected_value" id="selectedValueInput" value="">
-        <input type="hidden" name="selected_value1" id="selectedValue1Input" value="">
-        <input type="hidden" name="selected_value2" id="selectedValue2Input" value="">
-        <input type="hidden" name="selected_value3" id="selectedValue3Input" value="">
-        <input type="hidden" name="dfg_variant" id="dfg-variant" value="">
-        <input type="hidden" name="inductive_variant" id="inductive-variant" value="">
-        <input type="hidden" id="kmeansValue" name="selectedKMeansValue" value="3"> <!-- Default value is 3 -->
-        <input type="hidden" id="dbscanVar" name="selectDBSCANValue" value="0.5">
-        <input type="hidden" id="aggloVar" name="selectedAggloValue" value="2">
-        <button type="submit" class="submit-button">Submit</button>
-    </form>
+<div class="form-container">
+<form id="submitForm" action="/submit" method="POST" onsubmit="submitForm()">
+    <input type="hidden" name="selectedArea" id="selectedAreaInput" value="">
+    <input type="hidden" name="selected_value" id="selectedValueInput" value="">
+    <input type="hidden" name="selected_value1" id="selectedValue1Input" value="">
+    <input type="hidden" name="selected_value2" id="selectedValue2Input" value="">
+    <input type="hidden" name="selected_value3" id="selectedValue3Input" value="">
+    <input type="hidden" name="dfg_variant" id="dfg-variant" value="">
+    <input type="hidden" name="inductive_variant" id="inductive-variant" value="">
+    <input type="hidden" id="kmeansValue" name="selectedKMeansValue" value="3"> <!-- Default value is 3 -->
+    <input type="hidden" id="dbscanVar" name="selectDBSCANValue" value="0.5">
+    <input type="hidden" id="aggloVar" name="selectedAggloValue" value="2">
+    <button type="submit" class="submit-button">Submit</button>
+</form>
 </div>
 </div>
 
 
 <script>
+    let selectedArea = ""; // city center, on the way, zentralfriedhof
     let selected_value = "";    // Data to cluster (e.g., "Temperature", "Traffic")
     let selected_value1 = "";   // Process discovery (e.g., "Alpha miner")
     let selected_value2 = "";   // Clustering (e.g., "K-means")
     let selected_value3 = "";   // Submit action (can be empty or used for further selection)
     let selectedKMeansValue = 3;
     let selectDBSCANValue = 0.5;
-    let selectedAggloValue = 2;
+    let selectedAggloValue = 3;
 
     function showButtons(buttonType) {
     // Get the specific hidden buttons container
@@ -301,14 +319,28 @@
         }
     }
 
-    function toggleButtonSelection(selectedButton) {
-    // Get all buttons with the class 'center-button'
-        const buttons = document.querySelectorAll('.center-button');
+    function toggleButtonSelection1(selectedButton) {
+        const areaButtons = document.querySelectorAll('.area-button-container .center-button');
+        areaButtons.forEach(button => button.classList.remove('selected'));
+
+        // Add 'selected' class to the clicked area button and update selectedArea
+        selectedButton.classList.add('selected');
+        selectedArea = selectedButton.innerText;  // Store the area name
+        document.getElementById('selectedAreaInput').value = selectedArea; // Update hidden input for area
+        console.log("Area selected:", selectedArea);
+    }
+    function toggleButtonSelection2(selectedButton) {
+        const dataButtons = document.querySelectorAll('.center-button');
         // Remove 'selected' class from all buttons
-        buttons.forEach(button => button.classList.remove('selected'));
+        {#buttons.forEach(button => button.classList.remove('selected'));#}
         // Add 'selected' class to the clicked button
         selected_value = selectedButton.innerText;
         selectedButton.classList.add('selected');
+        dataButtons.forEach(button => {
+            if (button !== selectedButton) {
+                button.classList.remove('selected');
+            }
+        })
         console.log("Button selected:", selectedButton.innerText);
 
         updateDBSCANOptions();
@@ -448,6 +480,16 @@
     }
     function showIndOptions() {
         document.getElementById('ind-options').style.display = 'block';
+    }
+
+    function selectArea(variant) {
+        selectedArea = variant;
+        document.getElementById('areaVar').value = variant;
+        console.log("Area variant selected:", variant);
+    }
+
+    function passAreaToBackend() {
+        console.log("Area parameter to pass:", selectedArea);
     }
 
     function submitForm() {
