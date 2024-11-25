@@ -187,11 +187,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vienna Tram Lines</title>
 </head>
-<body>
-    <h2>Vienna Tram Lines</h2>
-    <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d68604.85438477677!2d16.411332626570037!3d48.17033646463595!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2skr!4v1731156927141!5m2!1sen!2skr"
-            width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-</body>
+{#<body>#}
+{#    <h2>Vienna Tram Lines</h2>#}
+{#    <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d68604.85438477677!2d16.411332626570037!3d48.17033646463595!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2skr!4v1731156927141!5m2!1sen!2skr"#}
+{#            width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>#}
+{#</body>#}
 </html>
 </div>
 
@@ -203,13 +203,15 @@
     <button class="center-button" onclick="toggleButtonSelection1(this)">Zentralfriedhof</button>
 </div>
 
-<div class="container">
-    <h1 class="text-center mt-5">Choose which data you want to see!</h1>
-<div class="button-container data-button-container">
-    <button class="center-button" onclick="toggleButtonSelection2(this)">Temperature</button>
-    <button class="center-button" onclick="toggleButtonSelection2(this)">Multiple</button>
-    <button class="center-button" onclick="toggleButtonSelection2(this)">Traffic</button>
-</div>
+<form method="POST" action="/main">
+    <label>Select Unique IDs:</label><br>
+    {% for unique_id in unique_ids %}
+        <input type="checkbox" name="unique_ids" value="{{ unique_id }}" id="{{ unique_id }}">
+        <label for="{{ unique_id }}">{{ unique_id }}</label><br>
+    {% endfor %}
+    <button type="submit">Submit</button>
+</form>
+
 
 <br>
 <br>
@@ -291,6 +293,8 @@
     <input type="hidden" id="kmeansValue" name="selectedKMeansValue" value="3"> <!-- Default value is 3 -->
     <input type="hidden" id="dbscanVar" name="selectDBSCANValue" value="0.5">
     <input type="hidden" id="aggloVar" name="selectedAggloValue" value="2">
+    <input type="hidden" name="id1" value="{{ id1 }}">
+    <input type="hidden" name="id2" value="{{ id2 }}">
     <button type="submit" class="submit-button">Submit</button>
 </form>
 </div>
@@ -322,14 +326,18 @@
     function toggleButtonSelection1(selectedButton) {
         const areaButtons = document.querySelectorAll('.area-button-container .center-button');
         areaButtons.forEach(button => button.classList.remove('selected'));
+
+        // Add 'selected' class to the clicked area button and update selectedArea
         selectedButton.classList.add('selected');
-        selectedArea = selectedButton.innerText;  
-        document.getElementById('selectedAreaInput').value = selectedArea; 
+        selectedArea = selectedButton.innerText;  // Store the area name
+        document.getElementById('selectedAreaInput').value = selectedArea; // Update hidden input for area
         console.log("Area selected:", selectedArea);
     }
     function toggleButtonSelection2(selectedButton) {
         const dataButtons = document.querySelectorAll('.center-button');
+        // Remove 'selected' class from all buttons
         {#buttons.forEach(button => button.classList.remove('selected'));#}
+        // Add 'selected' class to the clicked button
         selected_value = selectedButton.innerText;
         selectedButton.classList.add('selected');
         dataButtons.forEach(button => {
@@ -345,8 +353,10 @@
     function updateDBSCANOptions() {
         const dbscanOptionsContainer = document.getElementById('dbscan-options');
 
+        // Clear existing DBSCAN options
         dbscanOptionsContainer.innerHTML = '';
 
+        // Set DBSCAN options based on the selected_value
         let dbscanValues = [];
         if (selected_value === "Temperature") {
             dbscanValues = [0.05, 0.1, 1.0];
