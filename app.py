@@ -4,12 +4,14 @@ from alpha import alpha
 from inductive import inductive
 import os
 from csvcon import yaml_to_csv
+from csvcon2 import extract_to_csv
 from temp_delay import temp_delay
 from alpha_temp import dfg
 from mult_delay import mult_delay
 from flask import render_template
 from markupsafe import Markup
 import yaml
+import pandas as pd
 from traf_delay import traf_delay
 
 app = Flask(__name__)
@@ -23,21 +25,20 @@ os.makedirs(CSV_FOLDER, exist_ok=True)
 
 @app.route('/')
 def home():
+    # Get list of CSV files
     csv_files = os.listdir(CSV_FOLDER)
+    # Pass the list of files to the template
     return render_template('main.html', csv_files=csv_files)
 
 @app.route('/use_existing_csv', methods=['POST'])
 def use_existing_csv():
-    # Get the selected CSV file from the form
     selected_file = request.form.get('csv_file')
-    if not selected_file:
-        return "No file selected", 400
+    if selected_file:
+        global FILENAME
+        FILENAME = os.path.join(CSV_FOLDER, selected_file)  # Set FILENAME to the selected CSV path
+        return redirect(url_for('generate_buttons'))  # Redirect to generate_buttons to display unique_ids
+    return "No file selected", 400
 
-    file_path = os.path.join(CSV_FOLDER, selected_file)
-    global FILENAME
-    FILENAME = file_path
-
-    return f"Selected file: {file_path}"
 
 @app.route('/yaml')
 def yaml_view():
@@ -75,7 +76,7 @@ def upload_file():
             csv_filename = os.path.join(CSV_FOLDER, file.filename.rsplit('.', 1)[0] + '.csv')
             csv_path = os.path.join(CSV_FOLDER, csv_filename)
 
-            yaml_to_csv(file_path, csv_filename)
+            extract_to_csv(file_path, csv_filename)
 
             FILENAME=csv_filename
             # print(FILENAME)
@@ -83,6 +84,21 @@ def upload_file():
             return render_template('main.html', message="File uploaded and converted successfully!")
     return "Invalid file type", 400
 
+@app.route('/generate_buttons', methods=['GET', 'POST'])
+def generate_buttons():
+    if not FILENAME:
+        return "No file selected. Please upload a file first.", 400
+
+    try:
+        # Read only the id_id column from the CSV file
+        df = pd.read_csv(FILENAME, usecols=['stop/attr'])
+        unique_ids = df['stop/attr'].dropna().unique()  # Get unique and non-NaN values
+        print(f"Unique 'stop/attr' values extracted: {unique_ids}")
+
+        # Pass unique IDs to the template
+        return render_template('main.html', unique_ids=unique_ids)
+    except Exception as e:
+        return f"Error processing file: {e}", 500
 
 @app.route('/direct_graph', methods=['POST'])
 def show_graph():
@@ -97,6 +113,26 @@ def show_graph():
                            selected_value=selected_value,
                            image_url=image_url)
 
+
+@app.route('/main', methods=['POST'])
+def main():
+    # Get the selected unique IDs (this will be a list of values)
+    selected_ids = request.form.getlist('unique_ids')
+
+    # If multiple IDs are selected, assign them to id1, id2
+    if len(selected_ids) >= 2:
+        id1 = selected_ids[0]
+        id2 = selected_ids[1]
+    else:
+        id1 = selected_ids[0] if selected_ids else None
+        id2 = None
+
+    print(f"Selected IDs in '/main': id1 = {id1}, id2 = {id2}")
+
+    # Render main.html with the selected IDs for further action
+    return render_template('main.html', id1=id1, id2=id2)
+
+# button 마다 algorithm 설정해주기
 @app.route('/submit', methods=['POST'])
 def submit():
     print("Request form data:", request.form)
@@ -112,6 +148,8 @@ def submit():
     selectDBSCANValue = float(request.form.get('selectDBSCANValue', 0.5))
     selectedAggloValue = int(request.form.get('selectedAggloValue', 2))
     selectedArea = request.form.get('selectedArea', None) # area selection
+    id1 = request.form.get('id1', None) # a1,a6,a7,a8
+    id2 = request.form.get('id2', None)  # a1,a6,a7,a8
 
 # debugging purpose
     print('selectedArea:', selectedArea)  # city center, on the way, zentralfriedhof
@@ -125,34 +163,37 @@ def submit():
     print("selectedKMeansValue:", selectedKMeansValue) # k means param
     print("selectedDBSCANValue:", selectDBSCANValue) # dbscan param
     print("selectedAggloValue:", selectedAggloValue)  # agglomerative param
+    print("id1:", id1) # a1,a6,a7,a8 - change later to names
+    print("id2:", id2)  # a1,a6,a7,a8 - change later to names
 
 #------------------
     global FILENAME
 
-    if selected_value == "Temperature":
-        td_csv = None
-        if selected_value2 == "K means":
-            # if k means
-            td_csv = temp_delay(FILENAME, selected_value2, selectedKMeansValue, selectedArea)
-        if selected_value2 == "DBSCAN":
-            # if dbscan
-            td_csv = temp_delay(FILENAME, selected_value2, selectDBSCANValue, selectedArea)
-        if selected_value2 == "Agglomerative":
-            td_csv = temp_delay(FILENAME, selected_value2, selectedAggloValue, selectedArea)
-        if td_csv is not None:
-            if selected_value1 == "Directly Followed Graph":
-                image_path = dfg(td_csv, selected_value3, dfg_variant)
-                image_url = url_for('static', filename=os.path.basename(image_path))
-            # elif selected_value1 == "Petri net":
-            #     print(FILENAME)
-            #     dfg(FILENAME)
-            #     image_url = url_for('static', filename='pn.png')
-            elif selected_value1 == "Inductive Miner":
-                image_path = inductive(td_csv, inductive_variant, selected_value3)
-                image_url = url_for('static', filename=os.path.basename(image_path))
-            elif selected_value1 == "Alpha Miner":
-                image_path = alpha(td_csv, alpha_variant, selected_value3)
-                image_url = url_for('static', filename=os.path.basename(image_path))
+    # if selected_value == "Temperature":
+    #     td_csv = None
+    if selected_value2 == "K means":
+        # if k means
+        td_csv = temp_delay(FILENAME, selected_value2, selectedKMeansValue, selectedArea, id1, id2)
+    if selected_value2 == "DBSCAN":
+        # if dbscan
+        td_csv = temp_delay(FILENAME, selected_value2, selectDBSCANValue, selectedArea, id1, id2)
+    if selected_value2 == "Agglomerative":
+        td_csv = temp_delay(FILENAME, selected_value2, selectedAggloValue, selectedArea, id1, id2)
+
+    if td_csv is not None:
+        if selected_value1 == "Directly Followed Graph":
+            image_path = dfg(td_csv, selected_value3, dfg_variant)
+            image_url = url_for('static', filename=os.path.basename(image_path))
+        # elif selected_value1 == "Petri net":
+        #     print(FILENAME)
+        #     dfg(FILENAME)
+        #     image_url = url_for('static', filename='pn.png')
+        elif selected_value1 == "Inductive Miner":
+            image_path = inductive(td_csv, inductive_variant, selected_value3)
+            image_url = url_for('static', filename=os.path.basename(image_path))
+        elif selected_value1 == "Alpha Miner":
+            image_path = alpha(td_csv, alpha_variant, selected_value3)
+            image_url = url_for('static', filename=os.path.basename(image_path))
 
     if selected_value == "Multiple":
         td_csv = None
@@ -199,7 +240,9 @@ def submit():
                            selected_value=selected_value,
                            selectedArea=selectedArea,
                            selected_value2=selected_value2,
-                           selected_value1=selected_value1)
+                           selected_value1=selected_value1,
+                           id1=id1,
+                           id2=id2)
 
 if __name__ == '__main__':
 

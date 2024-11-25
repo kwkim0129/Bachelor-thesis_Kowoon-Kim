@@ -9,26 +9,26 @@ from sklearn.cluster import KMeans
 import numpy as np
 
 # clustering: k means, dbscan / clusters = parameter for clustering algorithms
-def temp_delay(csvfile, clustering, clusters, area):
+def temp_delay(csvfile, clustering, clusters, area, id1, id2):
     df = pd.read_csv(csvfile)
     df['original_index'] = df.index # create index internally to keep original index
-
+    print(f"Filtering with id1 = {id1} and id2 = {id2}")
     # Filter out rows where label is 'a7' or 'a1'
-    df_a7 = df[df['label'] == 'a7'].copy()
-    df_a1 = df[df['label'] == 'a1'].copy()
+    df_a7 = df[df['stop/attr'] == id1].copy()
+    df_a1 = df[df['stop/attr'] == id2].copy()
 
     # -------- Debug: Check how many rows are being filtered ( can remove later )
-    print("Rows in df_a7:", len(df_a7))
-    print("Rows in df_a1:", len(df_a1))
+    print("Rows in id1:", len(df_a7))
+    print("Rows in id2:", len(df_a1))
     # --------
-    df_a7['temp_value'] = pd.to_numeric(df_a7['temp_value'], errors='coerce')
-    df_a1['delay'] = pd.to_numeric(df_a1['delay'], errors='coerce')
+    df_a7['stream_value'] = pd.to_numeric(df_a7['stream_value'], errors='coerce')
+    df_a1['stream_value'] = pd.to_numeric(df_a1['stream_value'], errors='coerce')
 
-    df_a7['temp_value'] = df_a7['temp_value'].fillna(df_a7['temp_value'].mean())
+    df_a7['stream_value'] = df_a7['stream_value'].fillna(df_a7['stream_value'].mean())
     # df_a1['delay'] = df_a1['delay'].fillna(df_a1['delay'].mean())
     # remove 0.0 and string values in a1
-    df_a1 = df_a1[df_a1['delay'] != 0.0]
-    df_a1 = df_a1.dropna(subset=['delay'])
+    df_a1 = df_a1[df_a1['stream_value'] != 0.0]
+    df_a1 = df_a1.dropna(subset=['stream_value'])
     # extract only delays with tram stops in the city center
     if area == "City Center":
         df_a1 = df_a1[(df_a1['stop'] == 1270) | (df_a1['stop'] == 105) | (df_a1['stop'] == 50)]
@@ -37,12 +37,12 @@ def temp_delay(csvfile, clustering, clusters, area):
     elif area == "Zentralfriedhof":
         df_a1 = df_a1[(df_a1['stop'] == 1270) | (df_a1['stop'] == 105) | (df_a1['stop'] == 50)]
     # ---- extract first trains of every lines ----
-    # df_a1 = df_a1.drop_duplicates(subset=['timestamp'], keep='first')
+    df_a1 = df_a1.drop_duplicates(subset=['timestamp'], keep='first')
     print("Rows in df_a1:", len(df_a1))
 
     # --------- Debugging: Check for NaN values after filling ( can remove later )
-    print("NaN values in df_a7 temp_value:", df_a7['temp_value'].isna().sum())
-    print("NaN values in df_a1 delay:", df_a1['delay'].isna().sum())
+    # print("NaN values in df_a7 temp_value:", df_a7['temp_value'].isna().sum())
+    # print("NaN values in df_a1 delay:", df_a1['delay'].isna().sum())
     if df_a7.empty:
         print("Error: No rows in df_a7 after filtering.")
     if df_a1.empty:
@@ -53,7 +53,7 @@ def temp_delay(csvfile, clustering, clusters, area):
     if not df_a7.empty:
         # Standardize the data
         scaler_a7 = StandardScaler()
-        X_a7_scaled = scaler_a7.fit_transform(df_a7[['temp_value']])
+        X_a7_scaled = scaler_a7.fit_transform(df_a7[['stream_value']])
 
         # Choose clustering method based on the 'clustering' variable
         if clustering == "K means":
@@ -75,10 +75,10 @@ def temp_delay(csvfile, clustering, clusters, area):
                 cluster_mask = (df_a7['cluster_label'] == cluster_label)
 
                 # Calculate min and max temp_value for the current cluster for the naming
-                min_value = df_a7.loc[cluster_mask, 'temp_value'].min()
-                max_value = df_a7.loc[cluster_mask, 'temp_value'].max()
+                min_value = df_a7.loc[cluster_mask, 'stream_value'].min()
+                max_value = df_a7.loc[cluster_mask, 'stream_value'].max()
 
-                a7_cluster_names[cluster_label] = f'temp_{min_value:.2f}_{max_value:.2f}'
+                a7_cluster_names[cluster_label] = f'"{id1}"_{min_value:.2f}_{max_value:.2f}'
 
         elif clustering == "Agglomerative":
             agglomerative_a7 = AgglomerativeClustering(n_clusters=clusters, linkage='average')
@@ -87,10 +87,10 @@ def temp_delay(csvfile, clustering, clusters, area):
             for cluster_label in range(clusters):
                 cluster_mask = (df_a7['cluster_label'] == cluster_label)
 
-                min_delay = df_a7.loc[cluster_mask, 'temp_value'].min()
-                max_delay = df_a7.loc[cluster_mask, 'temp_value'].max()
+                min_delay = df_a7.loc[cluster_mask, 'stream_value'].min()
+                max_delay = df_a7.loc[cluster_mask, 'stream_value'].max()
 
-                a7_cluster_names[cluster_label] = f'temp_{min_delay:.2f}_{max_delay:.2f}'
+                a7_cluster_names[cluster_label] = f'{id1}{min_delay:.2f}_{max_delay:.2f}'
 
 
         elif clustering == "DBSCAN":
@@ -114,14 +114,14 @@ def temp_delay(csvfile, clustering, clusters, area):
                 cluster_points = X_a7_scaled[cluster_mask]  # This gives the scaled points for the current cluster
 
                 # If you need to work with the temp_value specifically, you need to use df_a7
-                temp_values = df_a7.loc[cluster_mask, 'temp_value']
+                temp_values = df_a7.loc[cluster_mask, 'stream_value']
 
                 # Now you can calculate min and max values from the original temp_value column
                 min_value = temp_values.min()
                 max_value = temp_values.max()
 
                 # Create the cluster name dynamically
-                a7_cluster_names[cluster_label] = f"temp_{min_value:.2f}-{max_value:.2f}"
+                a7_cluster_names[cluster_label] = f"{id1}{min_value:.2f}-{max_value:.2f}"
             # df_a7['cluster_name'] = df_a7['cluster_label'].map(a7_cluster_names)
 
         else:
@@ -136,7 +136,7 @@ def temp_delay(csvfile, clustering, clusters, area):
     if not df_a1.empty:
         # Standardize the data
         scaler_a1 = StandardScaler()
-        X_a1_scaled = scaler_a1.fit_transform(df_a1[['delay']])
+        X_a1_scaled = scaler_a1.fit_transform(df_a1[['stream_value']])
 
         if clustering == "K means":
             kmeans_a1 = KMeans(n_clusters=clusters, random_state=42)
@@ -154,10 +154,10 @@ def temp_delay(csvfile, clustering, clusters, area):
             for cluster_label in sorted_cluster_indices_a1:
                 cluster_mask = (df_a1['cluster_label'] == cluster_label)
 
-                min_delay = df_a1.loc[cluster_mask, 'delay'].min()
-                max_delay = df_a1.loc[cluster_mask, 'delay'].max()
+                min_delay = df_a1.loc[cluster_mask, 'stream_value'].min()
+                max_delay = df_a1.loc[cluster_mask, 'stream_value'].max()
 
-                a1_cluster_names[cluster_label] = f'delay_{min_delay:.2f}_{max_delay:.2f}'
+                a1_cluster_names[cluster_label] = f'"{id2}"_{min_value:.2f}_{max_value:.2f}'
             print("Cluster names for a1:", a1_cluster_names)
 
         elif clustering == "Agglomerative":
@@ -167,10 +167,10 @@ def temp_delay(csvfile, clustering, clusters, area):
                 for cluster_label in range(clusters):
                     cluster_mask = (df_a1['cluster_label'] == cluster_label)
 
-                    min_delay = df_a1.loc[cluster_mask, 'delay'].min()
-                    max_delay = df_a1.loc[cluster_mask, 'delay'].max()
+                    min_delay = df_a1.loc[cluster_mask, 'stream_value'].min()
+                    max_delay = df_a1.loc[cluster_mask, 'stream_value'].max()
 
-                    a1_cluster_names[cluster_label] = f'delay_{min_delay:.2f}_{max_delay:.2f}'
+                    a1_cluster_names[cluster_label] = f'"{id2}"_{min_delay:.2f}_{max_delay:.2f}'
 
         elif clustering == "DBSCAN":
             dbscan_a1 = DBSCAN(eps=0.1, min_samples=5)  # You can adjust eps and min_samples as needed
@@ -190,12 +190,12 @@ def temp_delay(csvfile, clustering, clusters, area):
 
                 cluster_points = X_a1_scaled[cluster_mask]  # This gives the scaled  points for the current cluster
 
-                delay_values = df_a1.loc[cluster_mask, 'delay']
+                delay_values = df_a1.loc[cluster_mask, 'stream_value']
 
                 min_value = delay_values.min()
                 max_value = delay_values.max()
 
-                a1_cluster_names[cluster_label] = f"delay_{min_value:.2f}-{max_value:.2f}"
+                a1_cluster_names[cluster_label] = f"{id2}{min_value:.2f}-{max_value:.2f}"
 
             else:
                 print(f"Unsupported clustering method: {clustering}")
