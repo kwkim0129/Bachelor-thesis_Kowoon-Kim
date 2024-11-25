@@ -55,34 +55,35 @@ def yaml_view():
 def upload_file():
     if 'file' not in request.files:
         return "No file part", 400
+
     file = request.files['file']
     if file.filename == '':
         return "No file selected", 400
+
     if file:
         file_extension = file.filename.rsplit('.', 1)[1].lower()
         global FILENAME
+
         if file_extension == 'csv':
             file_path = os.path.join(CSV_FOLDER, file.filename)
             file.save(file_path)
 
             FILENAME = file_path
-            return render_template('main.html', message="CSV file uploaded successfully!")
+            return redirect(url_for('generate_buttons'))  # Redirect after uploading CSV
 
         elif file_extension == 'yaml':
-            # Save the yaml file
             file_path = os.path.join(UPLOAD_FOLDER, file.filename)
             file.save(file_path)
 
-            csv_filename = os.path.join(CSV_FOLDER, file.filename.rsplit('.', 1)[0] + '.csv')
+            csv_filename = file.filename.rsplit('.', 1)[0] + '.csv'
             csv_path = os.path.join(CSV_FOLDER, csv_filename)
+            extract_to_csv(file_path, csv_path)
 
-            extract_to_csv(file_path, csv_filename)
+            FILENAME = csv_path  # Set FILENAME to the converted CSV file
+            return redirect(url_for('generate_buttons'))  # Redirect after conversion
 
-            FILENAME=csv_filename
-            # print(FILENAME)
-            # file.save(file_path)
-            return render_template('main.html', message="File uploaded and converted successfully!")
     return "Invalid file type", 400
+
 
 @app.route('/generate_buttons', methods=['GET', 'POST'])
 def generate_buttons():
