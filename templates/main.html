@@ -234,9 +234,10 @@
     <div class="flex-grow-1 p-3 d-flex flex-column align-items-center">
     <button class="btn btn-primary" onclick="showButtons('processDiscovery')">Process Discovery</button>
     <div class="hidden-buttons" id="buttons-processDiscovery" style="display: none;">
-        <button class="btn btn-secondary circular-button" onclick="selectButton1(this)">Alpha miner</button>
+        <button class="btn btn-secondary circular-button" onclick="selectButton1(this)">Alpha Miner</button>
+        <button class="btn btn-secondary circular-button" onclick="selectButton1(this)">Heuristics Miner</button>
         <div class="d-flex align-items-center">
-            <button class="btn btn-secondary circular-button" onclick="selectButton1(this)">Inductive Miner</button>
+        <button class="btn btn-secondary circular-button" onclick="selectButton1(this)">Inductive Miner</button>
             <div class="ml-2"> <!-- Same container as Inductive Miner button -->
                 <button class="btn btn-secondary" onclick="selectInductiveVariant('0.1')">n = 0.1</button>
                 <button class="btn btn-secondary" onclick="selectInductiveVariant('0.2')">n = 0.2</button>
@@ -260,21 +261,27 @@
         <div style="display: flex; align-items: center;">
         <button class="btn btn-secondary circular-button" onclick="selectButton2(this)">K means</button>
             <div class="hidden-options" id="kmeans-options" style="display: none; margin-left: 10px;">
+                <button class="btn btn-secondary" onclick="selectKMeansVariant('3')">K = 1</button>
+                <button class="btn btn-secondary" onclick="selectKMeansVariant('3')">K = 2</button>
                 <button class="btn btn-secondary" onclick="selectKMeansVariant('3')">K = 3</button>
-                <button class="btn btn-secondary" onclick="selectKMeansVariant('5')">K = 5</button>
-                <button class="btn btn-secondary" onclick="selectKMeansVariant('7')">K = 7</button>
+                <button class="btn btn-secondary" onclick="selectKMeansVariant('5')">K = 4</button>
+                <button class="btn btn-secondary" onclick="selectKMeansVariant('7')">K = 5</button>
             </div>
         </div>
         <button class="btn btn-secondary circular-button" onclick="selectButton2(this)">Agglomerative</button>
             <div class="hidden-options" id="agglo-options" style="display: none; margin-left: 10px;">
-                <button class="btn btn-secondary" onclick="selectAggloVariant('3')">n = 3</button>
-                <button class="btn btn-secondary" onclick="selectAggloVariant('5')">n = 5</button>
-                <button class="btn btn-secondary" onclick="selectAggloVariant('7')">n = 7</button>
+                <button class="btn btn-secondary" onclick="selectAggloVariant('3')">n = 1</button>
+                <button class="btn btn-secondary" onclick="selectAggloVariant('3')">n = 2</button>
+                <button class="btn btn-secondary" onclick="selectAggloVariant('5')">n = 3</button>
+                <button class="btn btn-secondary" onclick="selectAggloVariant('7')">n = 4</button>
+                <button class="btn btn-secondary" onclick="selectAggloVariant('3')">n = 5</button>
             </div>
         <button class="btn btn-secondary circular-button" onclick="selectButton2(this)">DBSCAN</button>
              <div class="hidden-options" id="dbscan-options" style="display: none; margin-top: 10px;">
                 <button class="btn btn-secondary" onclick="selectDBSCANVariant('0.05')">eps = 0.05</button>
                 <button class="btn btn-secondary" onclick="selectDBSCANVariant('0.1')">eps = 0.1</button>
+                 <button class="btn btn-secondary" onclick="selectDBSCANVariant('1.0')">eps = 0.5</button>
+                 <button class="btn btn-secondary" onclick="selectDBSCANVariant('1.0')">eps = 0.75</button>
                 <button class="btn btn-secondary" onclick="selectDBSCANVariant('1.0')">eps = 1.0</button>
             </div>
         </div>
