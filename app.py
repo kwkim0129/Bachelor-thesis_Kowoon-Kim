@@ -1,18 +1,18 @@
+from select import select
+
 from flask import Flask, render_template, request, redirect, url_for
-from dfg import dfg
 from alpha import alpha
 from inductive import inductive
 import os
 from csvcon import yaml_to_csv
 from csvcon2 import extract_to_csv
 from temp_delay import temp_delay
-from alpha_temp import dfg
-from mult_delay import mult_delay
+from dfgg import dfg
 from flask import render_template
 from markupsafe import Markup
 import yaml
 import pandas as pd
-from traf_delay import traf_delay
+from heuristics import heuristics
 
 app = Flask(__name__)
 
@@ -185,56 +185,55 @@ def submit():
         if selected_value1 == "Directly Followed Graph":
             image_path = dfg(td_csv, selected_value3, dfg_variant)
             image_url = url_for('static', filename=os.path.basename(image_path))
-        # elif selected_value1 == "Petri net":
-        #     print(FILENAME)
-        #     dfg(FILENAME)
-        #     image_url = url_for('static', filename='pn.png')
         elif selected_value1 == "Inductive Miner":
             image_path = inductive(td_csv, inductive_variant, selected_value3)
+            image_url = url_for('static', filename=os.path.basename(image_path))
+        elif selected_value1 == "Heuristics Miner":
+            image_path = heuristics(td_csv)
             image_url = url_for('static', filename=os.path.basename(image_path))
         elif selected_value1 == "Alpha Miner":
             image_path = alpha(td_csv, alpha_variant, selected_value3)
             image_url = url_for('static', filename=os.path.basename(image_path))
 
-    if selected_value == "Multiple":
-        td_csv = None
-        if selected_value2 == "K means":
-            td_csv = mult_delay(FILENAME, selected_value2, selectedKMeansValue)
-        if selected_value2 == "DBSCAN":
-            td_csv = mult_delay(FILENAME, selected_value2, selectDBSCANValue)
-        if selected_value2 == "Agglomerative":
-            td_csv = mult_delay(FILENAME, selected_value2, selectedAggloValue)
-
-        if td_csv is not None:
-            if selected_value1 == "Directly Followed Graph":
-                    image_path = dfg(td_csv, selected_value3, dfg_variant)
-                    image_url = url_for('static', filename=os.path.basename(image_path))
-            elif selected_value1 == "Inductive Miner":
-                image_path = inductive(td_csv, inductive_variant, selected_value3)
-                image_url = url_for('static', filename=os.path.basename(image_path))
-            elif selected_value1 == "Alpha Miner":
-                image_path = alpha(td_csv, alpha_variant, selected_value3)
-                image_url = url_for('static', filename=os.path.basename(image_path))
-
-    if selected_value == "Traffic":
-        td_csv = None
-        if selected_value2 == "K means":
-            td_csv = traf_delay(FILENAME, selected_value2, selectedKMeansValue)
-        if selected_value2 == "DBSCAN":
-            td_csv = traf_delay(FILENAME, selected_value2, selectDBSCANValue)
-        if selected_value2 == "Agglomerative":
-            td_csv = traf_delay(FILENAME, selected_value2, selectedAggloValue)
-
-        if td_csv is not None:
-            if selected_value1 == "Directly Followed Graph":
-                    image_path = dfg(td_csv, selected_value3, dfg_variant)
-                    image_url = url_for('static', filename=os.path.basename(image_path))
-            elif selected_value1 == "Inductive Miner":
-                image_path = inductive(td_csv, inductive_variant, selected_value3)
-                image_url = url_for('static', filename=os.path.basename(image_path))
-            elif selected_value1 == "Alpha Miner":
-                image_path = alpha(td_csv, alpha_variant, selected_value3)
-                image_url = url_for('static', filename=os.path.basename(image_path))
+    # if selected_value == "Multiple":
+    #     td_csv = None
+    #     if selected_value2 == "K means":
+    #         td_csv = mult_delay(FILENAME, selected_value2, selectedKMeansValue)
+    #     if selected_value2 == "DBSCAN":
+    #         td_csv = mult_delay(FILENAME, selected_value2, selectDBSCANValue)
+    #     if selected_value2 == "Agglomerative":
+    #         td_csv = mult_delay(FILENAME, selected_value2, selectedAggloValue)
+    #
+    #     if td_csv is not None:
+    #         if selected_value1 == "Directly Followed Graph":
+    #                 image_path = dfg(td_csv, selected_value3, dfg_variant)
+    #                 image_url = url_for('static', filename=os.path.basename(image_path))
+    #         elif selected_value1 == "Inductive Miner":
+    #             image_path = inductive(td_csv, inductive_variant, selected_value3)
+    #             image_url = url_for('static', filename=os.path.basename(image_path))
+    #         elif selected_value1 == "Alpha Miner":
+    #             image_path = alpha(td_csv, alpha_variant, selected_value3)
+    #             image_url = url_for('static', filename=os.path.basename(image_path))
+    #
+    # if selected_value == "Traffic":
+    #     td_csv = None
+    #     if selected_value2 == "K means":
+    #         td_csv = traf_delay(FILENAME, selected_value2, selectedKMeansValue)
+    #     if selected_value2 == "DBSCAN":
+    #         td_csv = traf_delay(FILENAME, selected_value2, selectDBSCANValue)
+    #     if selected_value2 == "Agglomerative":
+    #         td_csv = traf_delay(FILENAME, selected_value2, selectedAggloValue)
+    #
+    #     if td_csv is not None:
+    #         if selected_value1 == "Directly Followed Graph":
+    #                 image_path = dfg(td_csv, selected_value3, dfg_variant)
+    #                 image_url = url_for('static', filename=os.path.basename(image_path))
+    #         elif selected_value1 == "Inductive Miner":
+    #             image_path = inductive(td_csv, inductive_variant, selected_value3)
+    #             image_url = url_for('static', filename=os.path.basename(image_path))
+    #         elif selected_value1 == "Alpha Miner":
+    #             image_path = alpha(td_csv, alpha_variant, selected_value3)
+    #             image_url = url_for('static', filename=os.path.basename(image_path))
 
     return render_template('direct_graph.html',
                            image_url=image_url,

@@ -30,9 +30,10 @@ from temp_delay import temp_delay
 
 
 def inductive(FILENAME, parameter, submit):
+
     df = pd.read_csv(FILENAME)
     df = df.rename(columns={'label': 'concept:name', "time:timestamp": "timestamp"})
-    df['timestamp'] = pd.to_datetime(df['timestamp'])
+    df['timestamp'] = pd.to_datetime(df['timestamp'], format='ISO8601')
     df = df.drop_duplicates()
 
     parameters = {log_converter.Variants.TO_EVENT_LOG.value.Parameters.CASE_ID_KEY: 'case_id',  "noise_threshold": parameter}
