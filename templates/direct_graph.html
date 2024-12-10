@@ -31,20 +31,31 @@
     <div class="text-center mt-3">
     {% if selected_value1 == "Directly Followed Graph" %}
         <p><strong>Notes</strong></p>
-        <p>The bluer the graph, the more occurrences it represents.<br>
+        <p>The bluer the graph, the more occurrences it represents. (Applies only for DFG with frequency edges) <br>
             The thicker the arcs, the more frequent activities precede one another.<br>
-            Numbers next to an activity name in the node: how many occurrences are there in that cluster.<br>
+            Numbers next to an activity name in the node: how many occurrences are there in that cluster. (frequency) <br>
+            Numbers on the edges indicate time it takes for an activity to precede another one. (performance) <br>
             Self loops = activity occurs consecutively in some cases.
         </p>
-    {% elif selected_value1 == "Inductive Miner" %}
+    {% elif selected_value1 == "Inductive Miner" or selected_value1 == "Alpha Miner" %}
         <p><strong>Notes</strong></p>
         <p>
             These are the elements of a petri net:
+            circle: place
+            rectangle: transition
+            arrow: arc
+            dot: token
+            circle with a dot: start node
+            circle with a square: end node
         </p>
-          <figure>
-            <img src="{{ url_for('static', filename='petrinet.png') }}" alt="Example Image" width="300">
-          </figure>
-        {% endif %}
+    {% elif selected_value1 == "Heuristics Miner" %}
+        <p><strong>Notes</strong></p>
+        <p>
+            Edges indicate causal dependency (activity A occurs before B often).<br>
+            Green node: start node <br>
+            Orange node: end node <br>
+        </p>
+    {% endif %}
 
     </div>
 
