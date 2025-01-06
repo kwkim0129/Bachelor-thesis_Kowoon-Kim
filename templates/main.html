@@ -173,9 +173,7 @@
 
 <div style="border: 1px solid #ccc; padding: 10px; border-radius: 5px; font-size: 20px; text-align: center;">
     <p id="info-text" style="font-size: 20px;">
-        The YAML file has weather data, traffic information, construction sites near the tram stops, and delay data.
-        <br>
-        You can click one of the buttons below to explore the relationship with delays at tram stops in Vienna.
+        You can click one of the buttons below to explore the relationship among attributes.
     </p>
 </div>
 <br>
@@ -194,14 +192,14 @@
 {#</body>#}
 </html>
 </div>
-
-<div class="container">
-    <h1 class="text-center mt-5">Choose the area</h1>
-<div class="button-container area-button-container">
-    <button class="center-button" onclick="toggleButtonSelection1(this)">City Center</button>
-    <button class="center-button" onclick="toggleButtonSelection1(this)">On the way to the city center</button>
-    <button class="center-button" onclick="toggleButtonSelection1(this)">Zentralfriedhof</button>
-</div>
+{#area selection specific for vienna data#}
+{#<div class="container">#}
+{#    <h1 class="text-center mt-5">Choose the area</h1>#}
+{#<div class="button-container area-button-container">#}
+{#    <button class="center-button" onclick="toggleButtonSelection1(this)">City Center</button>#}
+{#    <button class="center-button" onclick="toggleButtonSelection1(this)">On the way to the city center</button>#}
+{#    <button class="center-button" onclick="toggleButtonSelection1(this)">Zentralfriedhof</button>#}
+{#</div>#}
 
 <form method="POST" action="/main">
     <label>Select Unique IDs:</label><br>
