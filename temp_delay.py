@@ -30,12 +30,12 @@ def temp_delay(csvfile, clustering, clusters, area, id1, id2):
     df_a1 = df_a1[df_a1['stream_value'] != 0.0]
     df_a1 = df_a1.dropna(subset=['stream_value'])
     # extract only delays with tram stops in the city center
-    if area == "City Center":
-        df_a1 = df_a1[(df_a1['stop'] == 1270) | (df_a1['stop'] == 105) | (df_a1['stop'] == 50)]
-    elif area == "On the way to the city center":
-        df_a1 = df_a1[(df_a1['stop'] == 2009) | (df_a1['stop'] == 2018) | (df_a1['stop'] == 2019)]
-    elif area == "Zentralfriedhof":
-        df_a1 = df_a1[(df_a1['stop'] == 1270) | (df_a1['stop'] == 105) | (df_a1['stop'] == 50)]
+    # if area == "City Center":
+    #     df_a1 = df_a1[(df_a1['stop'] == 1270) | (df_a1['stop'] == 105) | (df_a1['stop'] == 50)]
+    # elif area == "On the way to the city center":
+    #     df_a1 = df_a1[(df_a1['stop'] == 2009) | (df_a1['stop'] == 2018) | (df_a1['stop'] == 2019)]
+    # elif area == "Zentralfriedhof":
+    #     df_a1 = df_a1[(df_a1['stop'] == 1270) | (df_a1['stop'] == 105) | (df_a1['stop'] == 50)]
     # ---- extract first trains of every lines ----
     df_a1 = df_a1.drop_duplicates(subset=['timestamp'], keep='first')
     print("Rows in df_a1:", len(df_a1))

@@ -195,46 +195,6 @@ def submit():
             image_path = alpha(td_csv, alpha_variant, selected_value3)
             image_url = url_for('static', filename=os.path.basename(image_path))
 
-    # if selected_value == "Multiple":
-    #     td_csv = None
-    #     if selected_value2 == "K means":
-    #         td_csv = mult_delay(FILENAME, selected_value2, selectedKMeansValue)
-    #     if selected_value2 == "DBSCAN":
-    #         td_csv = mult_delay(FILENAME, selected_value2, selectDBSCANValue)
-    #     if selected_value2 == "Agglomerative":
-    #         td_csv = mult_delay(FILENAME, selected_value2, selectedAggloValue)
-    #
-    #     if td_csv is not None:
-    #         if selected_value1 == "Directly Followed Graph":
-    #                 image_path = dfg(td_csv, selected_value3, dfg_variant)
-    #                 image_url = url_for('static', filename=os.path.basename(image_path))
-    #         elif selected_value1 == "Inductive Miner":
-    #             image_path = inductive(td_csv, inductive_variant, selected_value3)
-    #             image_url = url_for('static', filename=os.path.basename(image_path))
-    #         elif selected_value1 == "Alpha Miner":
-    #             image_path = alpha(td_csv, alpha_variant, selected_value3)
-    #             image_url = url_for('static', filename=os.path.basename(image_path))
-    #
-    # if selected_value == "Traffic":
-    #     td_csv = None
-    #     if selected_value2 == "K means":
-    #         td_csv = traf_delay(FILENAME, selected_value2, selectedKMeansValue)
-    #     if selected_value2 == "DBSCAN":
-    #         td_csv = traf_delay(FILENAME, selected_value2, selectDBSCANValue)
-    #     if selected_value2 == "Agglomerative":
-    #         td_csv = traf_delay(FILENAME, selected_value2, selectedAggloValue)
-    #
-    #     if td_csv is not None:
-    #         if selected_value1 == "Directly Followed Graph":
-    #                 image_path = dfg(td_csv, selected_value3, dfg_variant)
-    #                 image_url = url_for('static', filename=os.path.basename(image_path))
-    #         elif selected_value1 == "Inductive Miner":
-    #             image_path = inductive(td_csv, inductive_variant, selected_value3)
-    #             image_url = url_for('static', filename=os.path.basename(image_path))
-    #         elif selected_value1 == "Alpha Miner":
-    #             image_path = alpha(td_csv, alpha_variant, selected_value3)
-    #             image_url = url_for('static', filename=os.path.basename(image_path))
-
     return render_template('direct_graph.html',
                            image_url=image_url,
                            selected_value=selected_value,
