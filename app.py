@@ -145,6 +145,7 @@ def submit():
     dfg_variant = request.form.get('dfg_variant', None)
     inductive_variant = request.form.get('inductive_variant', None)
     alpha_variant = request.form.get('alpha_variant', None)
+    heuristics_variant = request.form.get('heuristics_variant', None)
     selectedKMeansValue = int(request.form.get('selectedKMeansValue', 3))
     selectDBSCANValue = float(request.form.get('selectDBSCANValue', 0.5))
     selectedAggloValue = int(request.form.get('selectedAggloValue', 2))
@@ -161,6 +162,7 @@ def submit():
     print("dfg_variant:", dfg_variant) # dfg param
     print("inductive_var", inductive_variant) # inductive variant
     print("alpha_var", alpha_variant)  # inductive variant
+    print("heuristics_var", heuristics_variant) # heuristics variant
     print("selectedKMeansValue:", selectedKMeansValue) # k means param
     print("selectedDBSCANValue:", selectDBSCANValue) # dbscan param
     print("selectedAggloValue:", selectedAggloValue)  # agglomerative param
@@ -189,7 +191,7 @@ def submit():
             image_path = inductive(td_csv, inductive_variant, selected_value3)
             image_url = url_for('static', filename=os.path.basename(image_path))
         elif selected_value1 == "Heuristics Miner":
-            image_path = heuristics(td_csv)
+            image_path = heuristics(td_csv, heuristics_variant)
             image_url = url_for('static', filename=os.path.basename(image_path))
         elif selected_value1 == "Alpha Miner":
             image_path = alpha(td_csv, alpha_variant, selected_value3)
