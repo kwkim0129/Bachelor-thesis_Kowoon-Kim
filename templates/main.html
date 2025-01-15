@@ -234,6 +234,11 @@
     <div class="hidden-buttons" id="buttons-processDiscovery" style="display: none;">
         <button class="btn btn-secondary circular-button" onclick="selectButton1(this)">Alpha Miner</button>
         <button class="btn btn-secondary circular-button" onclick="selectButton1(this)">Heuristics Miner</button>
+            <div class="ml-2"> <!-- Same container as Inductive Miner button -->
+                <button class="btn btn-secondary" onclick="selectHeuristicsVariant('0.1')">n = 0.1</button>
+                <button class="btn btn-secondary" onclick="selectHeuristicsVariant('0.5')">n = 0.5</button>
+                <button class="btn btn-secondary" onclick="selectHeuristicsVariant('1.0')">n = 1.0</button>
+            </div>
         <div class="d-flex align-items-center">
         <button class="btn btn-secondary circular-button" onclick="selectButton1(this)">Inductive Miner</button>
             <div class="ml-2"> <!-- Same container as Inductive Miner button -->
@@ -295,6 +300,7 @@
     <input type="hidden" name="selected_value3" id="selectedValue3Input" value="">
     <input type="hidden" name="dfg_variant" id="dfg-variant" value="">
     <input type="hidden" name="inductive_variant" id="inductive-variant" value="">
+    <input type="hidden" name="heuristics_variant" id="heuristics-variant" value="">
     <input type="hidden" id="kmeansValue" name="selectedKMeansValue" value="3"> <!-- Default value is 3 -->
     <input type="hidden" id="dbscanVar" name="selectDBSCANValue" value="0.5">
     <input type="hidden" id="aggloVar" name="selectedAggloValue" value="2">
@@ -489,6 +495,17 @@
     }
     function showIndOptions() {
         document.getElementById('ind-options').style.display = 'block';
+    }
+
+    function selectHeuristicsVariant(variant) {
+        heuristics_variant = variant;
+        document.getElementById('heuristics-variant').value = variant;
+
+        // Debugging purpose: log the selected variant
+        console.log("Heuristics variant selected:", variant);
+    }
+    function showHeuOptions() {
+        document.getElementById('heu-options').style.display = 'block';
     }
 
     function selectArea(variant) {
