@@ -235,23 +235,23 @@
         <button class="btn btn-secondary circular-button" onclick="selectButton1(this)">Alpha Miner</button>
         <button class="btn btn-secondary circular-button" onclick="selectButton1(this)">Heuristics Miner</button>
             <div class="ml-2"> <!-- Same container as Inductive Miner button -->
-                <button class="btn btn-secondary" onclick="selectHeuristicsVariant('0.1')">n = 0.1</button>
-                <button class="btn btn-secondary" onclick="selectHeuristicsVariant('0.5')">n = 0.5</button>
-                <button class="btn btn-secondary" onclick="selectHeuristicsVariant('1.0')">n = 1.0</button>
+                <button class="btn btn-secondary" onclick="selectHeuristicsVariant('0.1', this)">n = 0.1</button>
+                <button class="btn btn-secondary" onclick="selectHeuristicsVariant('0.5', this)">n = 0.5</button>
+                <button class="btn btn-secondary" onclick="selectHeuristicsVariant('1.0', this)">n = 1.0</button>
             </div>
         <div class="d-flex align-items-center">
         <button class="btn btn-secondary circular-button" onclick="selectButton1(this)">Inductive Miner</button>
             <div class="ml-2"> <!-- Same container as Inductive Miner button -->
-                <button class="btn btn-secondary" onclick="selectInductiveVariant('0.1')">n = 0.1</button>
-                <button class="btn btn-secondary" onclick="selectInductiveVariant('0.2')">n = 0.2</button>
-                <button class="btn btn-secondary" onclick="selectInductiveVariant('0.3')">n = 0.3</button>
+                <button class="btn btn-secondary" onclick="selectInductiveVariant('0.1', this)">n = 0.1</button>
+                <button class="btn btn-secondary" onclick="selectInductiveVariant('0.2', this)">n = 0.2</button>
+                <button class="btn btn-secondary" onclick="selectInductiveVariant('0.3', this)">n = 0.3</button>
             </div>
         </div>
         <div class="d-flex align-items-center">
             <button class="btn btn-secondary circular-button" onclick="selectButton1(this)">Directly Followed Graph</button>
             <div class="ml-2"> {# same container as DFG button #}
-                <button class="btn btn-secondary" onclick="selectDFGVariant('FREQUENCY')">FREQUENCY</button>
-                <button class="btn btn-secondary" onclick="selectDFGVariant('PERFORMANCE')">PERFORMANCE</button>
+                <button class="btn btn-secondary" onclick="selectDFGVariant('FREQUENCY', this)">FREQUENCY</button>
+                <button class="btn btn-secondary" onclick="selectDFGVariant('PERFORMANCE', this)">PERFORMANCE</button>
             </div>
         </div>
     </div>
@@ -264,28 +264,28 @@
         <div style="display: flex; align-items: center;">
         <button class="btn btn-secondary circular-button" onclick="selectButton2(this)">K means</button>
             <div class="hidden-options" id="kmeans-options" style="display: none; margin-left: 10px;">
-                <button class="btn btn-secondary" onclick="selectKMeansVariant('3')">K = 1</button>
-                <button class="btn btn-secondary" onclick="selectKMeansVariant('3')">K = 2</button>
-                <button class="btn btn-secondary" onclick="selectKMeansVariant('3')">K = 3</button>
-                <button class="btn btn-secondary" onclick="selectKMeansVariant('5')">K = 4</button>
-                <button class="btn btn-secondary" onclick="selectKMeansVariant('7')">K = 5</button>
+                <button class="btn btn-secondary" onclick="selectKMeansVariant('1', this)">K = 1</button>
+                <button class="btn btn-secondary" onclick="selectKMeansVariant('2', this)">K = 2</button>
+                <button class="btn btn-secondary" onclick="selectKMeansVariant('3', this)">K = 3</button>
+                <button class="btn btn-secondary" onclick="selectKMeansVariant('4', this)">K = 4</button>
+                <button class="btn btn-secondary" onclick="selectKMeansVariant('5', this)">K = 5</button>
             </div>
         </div>
         <button class="btn btn-secondary circular-button" onclick="selectButton2(this)">Agglomerative</button>
             <div class="hidden-options" id="agglo-options" style="display: none; margin-left: 10px;">
-                <button class="btn btn-secondary" onclick="selectAggloVariant('3')">n = 1</button>
-                <button class="btn btn-secondary" onclick="selectAggloVariant('3')">n = 2</button>
-                <button class="btn btn-secondary" onclick="selectAggloVariant('5')">n = 3</button>
-                <button class="btn btn-secondary" onclick="selectAggloVariant('7')">n = 4</button>
-                <button class="btn btn-secondary" onclick="selectAggloVariant('3')">n = 5</button>
+                <button class="btn btn-secondary" onclick="selectAggloVariant('1', this)">n = 1</button>
+                <button class="btn btn-secondary" onclick="selectAggloVariant('2', this)">n = 2</button>
+                <button class="btn btn-secondary" onclick="selectAggloVariant('3', this)">n = 3</button>
+                <button class="btn btn-secondary" onclick="selectAggloVariant('4', this)">n = 4</button>
+                <button class="btn btn-secondary" onclick="selectAggloVariant('5', this)">n = 5</button>
             </div>
         <button class="btn btn-secondary circular-button" onclick="selectButton2(this)">DBSCAN</button>
              <div class="hidden-options" id="dbscan-options" style="display: none; margin-top: 10px;">
-                <button class="btn btn-secondary" onclick="selectDBSCANVariant('0.05')">eps = 0.05</button>
-                <button class="btn btn-secondary" onclick="selectDBSCANVariant('0.1')">eps = 0.1</button>
-                 <button class="btn btn-secondary" onclick="selectDBSCANVariant('1.0')">eps = 0.5</button>
-                 <button class="btn btn-secondary" onclick="selectDBSCANVariant('1.0')">eps = 0.75</button>
-                <button class="btn btn-secondary" onclick="selectDBSCANVariant('1.0')">eps = 1.0</button>
+                <button class="btn btn-secondary" onclick="selectDBSCANVariant('0.05', this)">eps = 0.05</button>
+                <button class="btn btn-secondary" onclick="selectDBSCANVariant('0.1', this)">eps = 0.1</button>
+                 <button class="btn btn-secondary" onclick="selectDBSCANVariant('1.0', this)">eps = 0.5</button>
+                 <button class="btn btn-secondary" onclick="selectDBSCANVariant('1.0', this)">eps = 0.75</button>
+                <button class="btn btn-secondary" onclick="selectDBSCANVariant('1.0', this)">eps = 1.0</button>
             </div>
         </div>
     </div>
@@ -443,42 +443,91 @@
     }
 }
 
-    function selectKMeansVariant(kValue) {
+    function selectKMeansVariant(kValue, button) {
         selectedKMeansValue = kValue;
         console.log("Selected K means cluster count:", selectedKMeansValue);
         document.getElementById('kmeansValue').value = selectedKMeansValue;
+
+        const buttons = document.querySelectorAll('.ml-2 .btn');
+        buttons.forEach(btn => {
+            btn.classList.remove('btn-primary');
+            btn.classList.add('btn-secondary');
+        });
+
+        // Highlight the clicked button
+        button.classList.remove('btn-secondary');
+        button.classList.add('btn-primary');
+
+        // Debugging purpose: log the selected variant
+        console.log("Inductive variant selected:", kValue);
     }
 
     function passKMeansParameterToBackend() {
         console.log("K means parameter to pass:", selectedKMeansValue);
     }
 
-    function selectDBSCANVariant(epsValue) {
+    function selectDBSCANVariant(epsValue, button) {
         selectDBSCANValue = epsValue;
         document.getElementById('dbscanVar').value = selectDBSCANValue;
         console.log("DBSCAN eps selected:", selectDBSCANValue);
+        const buttons = document.querySelectorAll('.ml-2 .btn');
+        buttons.forEach(btn => {
+            btn.classList.remove('btn-primary');
+            btn.classList.add('btn-secondary');
+        });
+
+        // Highlight the clicked button
+        button.classList.remove('btn-secondary');
+        button.classList.add('btn-primary');
+
+        // Debugging purpose: log the selected variant
+        console.log("Inductive variant selected:", epsvalue);
     }
 
     function passDBSCANParameterToBackend() {
         console.log("DBSCAN parameter to pass:", selectDBSCANValue);
     }
 
-    function selectAggloVariant(variant) {
+    function selectAggloVariant(variant, button) {
         selectedAggloValue = variant;
         console.log("Agglo n selected:", selectedAggloValue);
         document.getElementById('aggloVar').value = selectedAggloValue;
+        const buttons = document.querySelectorAll('.ml-2 .btn');
+        buttons.forEach(btn => {
+            btn.classList.remove('btn-primary');
+            btn.classList.add('btn-secondary');
+        });
+
+        // Highlight the clicked button
+        button.classList.remove('btn-secondary');
+        button.classList.add('btn-primary');
+
+        // Debugging purpose: log the selected variant
+        console.log("Inductive variant selected:", variant);
     }
 
     function passAggloParameterToBackend() {
         console.log("Agglo parameter to pass:", selectedAggloValue);
     }
 
-    function selectDFGVariant(variant) {
+    function selectDFGVariant(variant, button) {
         dfg_variant = variant;
         document.getElementById('dfg-variant').value = variant;
 
         // Debugging purpose: log the selected variant
         console.log("DFG variant selected:", variant);
+        const buttons = document.querySelectorAll('.ml-2 .btn');
+        buttons.forEach(btn => {
+            btn.classList.remove('btn-primary');
+            btn.classList.add('btn-secondary');
+        });
+
+        // Highlight the clicked button
+        button.classList.remove('btn-secondary');
+        button.classList.add('btn-primary');
+
+        // Debugging purpose: log the selected variant
+        console.log("Inductive variant selected:", variant);
     }
 
     // Function to show DFG options when Directly Followed Graph is clicked
@@ -486,9 +535,17 @@
         document.getElementById('dfg-options').style.display = 'block';
     }
 
-    function selectInductiveVariant(variant) {
-        inductive_variant = variant;
-        document.getElementById('inductive-variant').value = variant;
+    function selectInductiveVariant(variant, button) {
+        // Find all buttons in the container and reset their styles
+        const buttons = document.querySelectorAll('.ml-2 .btn');
+        buttons.forEach(btn => {
+            btn.classList.remove('btn-primary');
+            btn.classList.add('btn-secondary');
+        });
+
+        // Highlight the clicked button
+        button.classList.remove('btn-secondary');
+        button.classList.add('btn-primary');
 
         // Debugging purpose: log the selected variant
         console.log("Inductive variant selected:", variant);
@@ -497,22 +554,31 @@
         document.getElementById('ind-options').style.display = 'block';
     }
 
-    function selectHeuristicsVariant(variant) {
-        heuristics_variant = variant;
-        document.getElementById('heuristics-variant').value = variant;
+    function selectHeuristicsVariant(variant, button) {
+        const buttons = document.querySelectorAll('.ml-2 .btn');
 
-        // Debugging purpose: log the selected variant
-        console.log("Heuristics variant selected:", variant);
+        // Remove the "btn-primary" class and revert to "btn-secondary" for all buttons
+        buttons.forEach(btn => {
+            btn.classList.remove('btn-primary');
+            btn.classList.add('btn-secondary');
+        });
+
+        // Add the "btn-primary" class to the clicked button
+        button.classList.remove('btn-secondary');
+        button.classList.add('btn-primary');
+
+        // Optionally, handle the variant selection logic here
+        console.log(`Selected variant: `, variant);
     }
     function showHeuOptions() {
         document.getElementById('heu-options').style.display = 'block';
     }
 
-    function selectArea(variant) {
-        selectedArea = variant;
-        document.getElementById('areaVar').value = variant;
-        console.log("Area variant selected:", variant);
-    }
+    {#function selectArea(variant) {#}
+    {#    selectedArea = variant;#}
+    {#    document.getElementById('areaVar').value = variant;#}
+    {#    console.log("Area variant selected:", variant);#}
+    {#}#}
 
     function passAreaToBackend() {
         console.log("Area parameter to pass:", selectedArea);
