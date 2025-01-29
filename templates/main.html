@@ -224,6 +224,7 @@
     </p>
 </div>
 
+
 <div class="container">
     <h1 class="text-center mt-5">Choose which discovery algorithm you want!</h1>
 </div>
@@ -313,7 +314,7 @@
 
 
 <script>
-    let selectedArea = ""; // city center, on the way, zentralfriedhof
+    {#let selectedArea = ""; // city center, on the way, zentralfriedhof,#}
     let selected_value = "";    // Data to cluster (e.g., "Temperature", "Traffic")
     let selected_value1 = "";   // Process discovery (e.g., "Alpha miner")
     let selected_value2 = "";   // Clustering (e.g., "K-means")
@@ -442,46 +443,74 @@
         document.getElementById('agglo-options').style.display = 'none';
     }
 }
+let activeProcessDiscoveryButton = null;
+let activeClusteringButton = null;
 
     function selectKMeansVariant(kValue, button) {
         selectedKMeansValue = kValue;
         console.log("Selected K means cluster count:", selectedKMeansValue);
         document.getElementById('kmeansValue').value = selectedKMeansValue;
 
-        const buttons = document.querySelectorAll('.ml-2 .btn');
-        buttons.forEach(btn => {
-            btn.classList.remove('btn-primary');
-            btn.classList.add('btn-secondary');
-        });
+        if (activeClusteringButton) {
+            activeClusteringButton.classList.remove('btn-primary');
+            activeClusteringButton.classList.add('btn-secondary');
+        }
+        {#const buttons = document.querySelectorAll('.ml-2 .btn');#}
+        {#buttons.forEach(btn => {#}
+        {#    btn.classList.remove('btn-primary');#}
+        {#    btn.classList.add('btn-secondary');#}
+        {#});#}
 
         // Highlight the clicked button
         button.classList.remove('btn-secondary');
         button.classList.add('btn-primary');
 
+        activeClusteringButton = button;
+
+        if (activeProcessDiscoveryButtonl) {
+            activeProcessDiscoveryButton.classList.add('btn-primary');
+        }
+
         // Debugging purpose: log the selected variant
-        console.log("Inductive variant selected:", kValue);
+        console.log("K means variant selected:", kValue);
     }
 
     function passKMeansParameterToBackend() {
         console.log("K means parameter to pass:", selectedKMeansValue);
     }
 
+
     function selectDBSCANVariant(epsValue, button) {
         selectDBSCANValue = epsValue;
         document.getElementById('dbscanVar').value = selectDBSCANValue;
         console.log("DBSCAN eps selected:", selectDBSCANValue);
-        const buttons = document.querySelectorAll('.ml-2 .btn');
-        buttons.forEach(btn => {
-            btn.classList.remove('btn-primary');
-            btn.classList.add('btn-secondary');
-        });
+
+        if (activeClusteringButton) {
+            activeClusteringButton.classList.remove('btn-primary');
+            activeClusteringButton.classList.add('btn-secondary');
+        }
+
+        button.classList.remove('btn-secondary');
+        button.classList.add('btn-primary');
+
+        activeClusteringButton = button;
+
+        {#const buttons = document.querySelectorAll('.ml-2 .btn');#}
+        {#buttons.forEach(btn => {#}
+        {#    btn.classList.remove('btn-primary');#}
+        {#    btn.classList.add('btn-secondary');#}
+        {#});#}
 
         // Highlight the clicked button
         button.classList.remove('btn-secondary');
         button.classList.add('btn-primary');
 
+        if (activeProcessDiscoveryButton) {
+            activeProcessDiscoveryButton.classList.add('btn-primary');
+        }
+
         // Debugging purpose: log the selected variant
-        console.log("Inductive variant selected:", epsvalue);
+        console.log("DBScan variant selected:", epsvalue);
     }
 
     function passDBSCANParameterToBackend() {
@@ -493,14 +522,24 @@
         console.log("Agglo n selected:", selectedAggloValue);
         document.getElementById('aggloVar').value = selectedAggloValue;
         const buttons = document.querySelectorAll('.ml-2 .btn');
-        buttons.forEach(btn => {
-            btn.classList.remove('btn-primary');
-            btn.classList.add('btn-secondary');
-        });
 
-        // Highlight the clicked button
+        if (activeClusteringButton) {
+            activeClusteringButton.classList.remove('btn-primary');
+            activeClusteringButton.classList.add('btn-secondary');
+        }
+
         button.classList.remove('btn-secondary');
         button.classList.add('btn-primary');
+
+        activeClusteringButton = button;
+        {#buttons.forEach(btn => {#}
+        {#    btn.classList.remove('btn-primary');#}
+        {#    btn.classList.add('btn-secondary');#}
+        {#});#}
+
+        if (activeProcessDiscoveryButton) {
+            activeProcessDiscoveryButton.classList.add('btn-primary');
+        }
 
         // Debugging purpose: log the selected variant
         console.log("Inductive variant selected:", variant);
