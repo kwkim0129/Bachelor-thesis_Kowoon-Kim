@@ -1,6 +1,6 @@
 from select import select
 
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify, session
 from alpha import alpha
 from inductive import inductive
 import os
@@ -13,8 +13,12 @@ from markupsafe import Markup
 import yaml
 import pandas as pd
 from heuristics import heuristics
+from flask import session
+
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
+app.secret_key = 'supersecretkey123'
 
 UPLOAD_FOLDER = 'uploads'
 CSV_FOLDER = 'converted_csv'     # csv to convert
@@ -22,6 +26,8 @@ ALLOWED_EXTENSIONS = {'yaml', 'csv'}    # yaml
 FILENAME=""
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(CSV_FOLDER, exist_ok=True)
+# app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 
 @app.route('/')
 def home():
@@ -40,25 +46,42 @@ def use_existing_csv():
     return "No file selected", 400
 
 
-@app.route('/yaml')
-def yaml_view():
-    # page that shows raw yaml file
-    with open("vienna-line-71.xes.yaml", "r") as file:
-        yaml_content = file.read()
-
-    formatted_yaml = Markup("<pre>" + yaml_content + "</pre>")
-
-    return render_template('yaml.html', yaml_data=formatted_yaml)
+# @app.route('/yaml')
+# def yaml_view():
+#     if request.method == 'POST':
+#         # Check if a file was uploaded
+#         if 'file' not in request.files:
+#             return "No file part", 400
+#
+#         file = request.files['file']
+#
+#         # If no file is selected
+#         if file.filename == '':
+#             return "No selected file", 400
+#
+#         # Save the file securely
+#         filename = secure_filename(file.filename)
+#         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+#         file.save(file_path)
+#
+#         # Read the content of the uploaded file
+#         with open(file_path, 'r') as uploaded_file:
+#             yaml_content = uploaded_file.read()
+#
+#         # Format the YAML content for HTML rendering
+#         formatted_yaml = Markup("<pre>" + yaml_content + "</pre>")
+#
+#         return render_template('yaml.html', yaml_data=formatted_yaml)
 
 # upload yaml
 @app.route('/upload', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
-        return "No file part", 400
+        return jsonify({"error": "No file part"}), 400
 
     file = request.files['file']
     if file.filename == '':
-        return "No file selected", 400
+        return jsonify({"error": "No file selected"}), 400
 
     if file:
         file_extension = file.filename.rsplit('.', 1)[1].lower()
@@ -67,39 +90,48 @@ def upload_file():
         if file_extension == 'csv':
             file_path = os.path.join(CSV_FOLDER, file.filename)
             file.save(file_path)
-
             FILENAME = file_path
-            return redirect(url_for('generate_buttons'))  # Redirect after uploading CSV
 
         elif file_extension == 'yaml':
             file_path = os.path.join(UPLOAD_FOLDER, file.filename)
             file.save(file_path)
-
             csv_filename = file.filename.rsplit('.', 1)[0] + '.csv'
             csv_path = os.path.join(CSV_FOLDER, csv_filename)
             extract_to_csv(file_path, csv_path)
+            FILENAME = csv_path
 
-            FILENAME = csv_path  # Set FILENAME to the converted CSV file
-            return redirect(url_for('generate_buttons'))  # Redirect after conversion
+        # Read and extract unique IDs after file is saved
+        try:
+            df = pd.read_csv(FILENAME, usecols=['stop/attr'])
+            unique_ids = df['stop/attr'].dropna().unique().tolist()
+            return jsonify({
+                "success": True,
+                "filename": file.filename,
+                "unique_ids": unique_ids
+            })
 
-    return "Invalid file type", 400
+        except Exception as e:
+            return jsonify({"error": f"Error processing file: {e}"}), 500
+
+    return jsonify({"error": "Invalid file type"}), 400
 
 
-@app.route('/generate_buttons', methods=['GET', 'POST'])
+@app.route('/generate_buttons', methods=['GET'])
 def generate_buttons():
     if not FILENAME:
-        return "No file selected. Please upload a file first.", 400
+        print("No file selected.")  # Debugging output
+        return jsonify({"error": "No file selected"}), 400
 
     try:
-        # Read only the id_id column from the CSV file
+        print(f"Reading file: {FILENAME}")  # Debugging output
         df = pd.read_csv(FILENAME, usecols=['stop/attr'])
-        unique_ids = df['stop/attr'].dropna().unique()  # Get unique and non-NaN values
-        print(f"Unique 'stop/attr' values extracted: {unique_ids}")
-
-        # Pass unique IDs to the template
-        return render_template('main.html', unique_ids=unique_ids)
+        unique_ids = df['stop/attr'].dropna().unique().tolist()
+        print(f"Extracted unique IDs: {unique_ids}")  # Debugging output
+        return jsonify({"unique_ids": unique_ids})  # Send JSON response
     except Exception as e:
-        return f"Error processing file: {e}", 500
+        print(f"Error processing file: {e}")  # Debugging output
+        return jsonify({"error": f"Error processing file: {e}"}), 500
+
 
 @app.route('/direct_graph', methods=['POST'])
 def show_graph():
@@ -117,25 +149,17 @@ def show_graph():
 
 @app.route('/main', methods=['POST'])
 def main():
-    # Get the selected unique IDs (this will be a list of values)
     selected_ids = request.form.getlist('unique_ids')
 
-    # If multiple IDs are selected, assign them to id1, id2
-    if len(selected_ids) >= 2:
-        id1 = selected_ids[0]
-        id2 = selected_ids[1]
-    else:
-        id1 = selected_ids[0] if selected_ids else None
-        id2 = None
+    session['selected_ids'] = selected_ids
 
-    print(f"Selected IDs in '/main': id1 = {id1}, id2 = {id2}")
-
-    # Render main.html with the selected IDs for further action
-    return render_template('main.html', id1=id1, id2=id2)
+    print(f"Selected IDs in '/main': {selected_ids}")
+    return render_template('main.html', selected_ids=selected_ids)
 
 # button 마다 algorithm 설정해주기
 @app.route('/submit', methods=['POST'])
 def submit():
+
     print("Request form data:", request.form)
     image_url=""
     selected_value = request.form.get('selected_value', None)  # Get value from data to cluster
@@ -150,10 +174,9 @@ def submit():
     selectDBSCANValue = float(request.form.get('selectDBSCANValue', 0.5))
     selectedAggloValue = int(request.form.get('selectedAggloValue', 2))
     selectedArea = request.form.get('selectedArea', None) # area selection
-    id1 = request.form.get('id1', None) # a1,a6,a7,a8
-    id2 = request.form.get('id2', None)  # a1,a6,a7,a8
+    selected_ids = session.get('selected_ids', [])  # Retrieve the list from session
 
-# debugging purpose
+    # debugging purpose
     print('selectedArea:', selectedArea)  # city center, on the way, zentralfriedhof
     print("selected_value:", selected_value)    # data to see
     print("selected_value1:", selected_value1)  # process discovery
@@ -166,8 +189,7 @@ def submit():
     print("selectedKMeansValue:", selectedKMeansValue) # k means param
     print("selectedDBSCANValue:", selectDBSCANValue) # dbscan param
     print("selectedAggloValue:", selectedAggloValue)  # agglomerative param
-    print("id1:", id1) # a1,a6,a7,a8 - change later to names
-    print("id2:", id2)  # a1,a6,a7,a8 - change later to names
+    print(f"Submitted IDs: {selected_ids}")
 
 #------------------
     global FILENAME
@@ -176,12 +198,12 @@ def submit():
     #     td_csv = None
     if selected_value2 == "K means":
         # if k means
-        td_csv = temp_delay(FILENAME, selected_value2, selectedKMeansValue, selectedArea, id1, id2)
+        td_csv = temp_delay(FILENAME, selected_value2, selectedKMeansValue, selected_ids)
     if selected_value2 == "DBSCAN":
         # if dbscan
-        td_csv = temp_delay(FILENAME, selected_value2, selectDBSCANValue, selectedArea, id1, id2)
+        td_csv = temp_delay(FILENAME, selected_value2, selectDBSCANValue, selected_ids)
     if selected_value2 == "Agglomerative":
-        td_csv = temp_delay(FILENAME, selected_value2, selectedAggloValue, selectedArea, id1, id2)
+        td_csv = temp_delay(FILENAME, selected_value2, selectedAggloValue, selected_ids)
 
     if td_csv is not None:
         if selected_value1 == "Directly Followed Graph":
@@ -200,11 +222,10 @@ def submit():
     return render_template('direct_graph.html',
                            image_url=image_url,
                            selected_value=selected_value,
-                           selectedArea=selectedArea,
+                           # selectedArea=selectedArea,
                            selected_value2=selected_value2,
                            selected_value1=selected_value1,
-                           id1=id1,
-                           id2=id2)
+                           selected_ids=selected_ids)
 
 if __name__ == '__main__':
 
