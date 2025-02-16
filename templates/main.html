@@ -148,26 +148,168 @@
 
 <div class="container text-center mt-5">
     <h1 class="custom-title">Upload the File</h1>
-    <form action="/upload" method="post" enctype="multipart/form-data">
+    <form id="uploadForm" enctype="multipart/form-data">
         <div class="mb-3">
-            <!-- Change accept=".csv" to accept=".yaml" to allow .yaml files -->
             <input type="file" class="form-control" id="fileUpload" name="file" accept=".yaml" required>
         </div>
         <button type="submit" class="btn btn-primary">Upload</button>
     </form>
+
+    <p id="responseMessage"></p>
+
+    <div id="uniqueIdsContainer" style="display:none;">
+        <h3>Select Unique IDs:</h3>
+        <form id="uniqueIdsForm">
+            <div id="uniqueIdsList"></div>
+            <button type="button" id="submitIdsBtn">Submit</button>
+        </form>
+    </div>
 </div>
+
 <!-- Add a section to select an existing CSV; OPTIONAL -->
+
 <div class="container text-center mt-5">
     <h1 class="custom-title">Or select an existing CSV</h1>
-    <form action="/use_existing_csv" method="post">
-    <label for="csv_file">Select an existing CSV:</label>
-    <select name="csv_file" id="csv_file">
-        {% for file in csv_files %}
-            <option value="{{ file }}">{{ file }}</option>
-        {% endfor %}
-    </select>
-    <input type="submit" value="Use Selected CSV">
-</form>
+    <form id="csvForm">
+        <label for="csv_file">Select an existing CSV:</label>
+        <select name="csv_file" id="csv_file">
+            {% for file in csv_files %}
+                <option value="{{ file }}">{{ file }}</option>
+            {% endfor %}
+        </select>
+        <button type="button" id="useCsvBtn">Use Selected CSV</button>
+    </form>
+    <p id="responseMessage"></p>
+
+    <!-- recent one -->
+    <div id="uniqueIdsContainer" style="display:none;">
+        <h3>Select Unique IDs:</h3>
+        <form method="POST" action="/main" id="uniqueIdsForm">
+            <div id="uniqueIdsList"></div>
+            <button type="button" id="submitIdsBtn">Submit</button>
+        </form>
+    </div>
+    <!------recent one ---------->
+</div>
+
+
+
+<script>
+document.getElementById("useCsvBtn").addEventListener("click", function() {
+    var selectElement = document.getElementById("csv_file");
+    var selectedFile = selectElement.value;
+
+    fetch("/use_existing_csv", {
+        method: "POST",
+        body: new URLSearchParams({ csv_file: selectedFile }),
+        headers: { "Content-Type": "application/x-www-form-urlencoded" }
+    })
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById("responseMessage").innerText = "File selected successfully!";
+        localStorage.setItem("selectedCSV", selectedFile);
+
+        // ✅ Fetch unique IDs after selecting the file
+        return fetch("/generate_buttons");
+    })
+    .then(response => response.json())  // Expect JSON response with unique IDs
+    .then(data => {
+        let uniqueIdsContainer = document.getElementById("uniqueIdsContainer");
+        let uniqueIdsList = document.getElementById("uniqueIdsList");
+
+        uniqueIdsList.innerHTML = ""; // Clear previous list
+
+        data.unique_ids.forEach(id => {
+            uniqueIdsList.innerHTML += `
+                <input type="checkbox" name="unique_ids" value="${id}" id="${id}">
+                <label for="${id}">${id}</label><br>
+            `;
+        });
+
+        uniqueIdsContainer.style.display = "block"; // Show the section
+    })
+    .catch(error => console.error("Error:", error));
+});
+
+// ✅ Submit selected IDs without page reload
+document.getElementById("submitIdsBtn").addEventListener("click", function() {
+    let selectedIds = Array.from(document.querySelectorAll('input[name="unique_ids"]:checked'))
+        .map(checkbox => `unique_ids=${encodeURIComponent(checkbox.value)}`)
+        .join("&"); // Join with '&' for correct form encoding
+
+    fetch("/main", {
+        method: "POST",
+        body: selectedIds,  // Correctly formatted query string
+        headers: { "Content-Type": "application/x-www-form-urlencoded" }
+    })
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById("responseMessage").innerText = "IDs submitted successfully!";
+    })
+    .catch(error => console.error("Error:", error));
+});
+
+// ✅ Restore selected CSV on page load
+document.addEventListener("DOMContentLoaded", function() {
+    var storedFile = localStorage.getItem("selectedCSV");
+    if (storedFile) {
+        document.getElementById("csv_file").value = storedFile;
+    }
+});
+
+// Edited JavaScript for upload form submission to display unique IDs as checkboxes and keep the uploaded file in the upload bar
+
+document.getElementById('uploadForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    let formData = new FormData(this);
+
+    fetch('/upload', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('csv_file').innerHTML = `<option selected>${data.filename}</option>`;
+            localStorage.setItem("selectedCSV", data.filename);
+
+            let uniqueIdsContainer = document.getElementById('uniqueIdsContainer');
+            let uniqueIdsList = document.getElementById('uniqueIdsList');
+            uniqueIdsList.innerHTML = '';
+
+            data.unique_ids.forEach(id => {
+                uniqueIdsList.innerHTML += `
+                    <input type="checkbox" name="unique_ids" value="${id}" id="${id}">
+                    <label for="${id}">${id}</label><br>
+                `;
+            });
+
+            uniqueIdsContainer.style.display = 'block';
+            document.getElementById('responseMessage').innerText = "File uploaded successfully!";
+        } else {
+            document.getElementById('responseMessage').innerText = data.error;
+        }
+    })
+    .catch(error => console.error('Error:', error));
+});
+
+
+</script>
+
+
+
+{#<div class="container text-center mt-5">#}
+{#    <h1 class="custom-title">Or select an existing CSV</h1>#}
+{#    <form action="/use_existing_csv" method="post">#}
+{#    <label for="csv_file">Select an existing CSV:</label>#}
+{#    <select name="csv_file" id="csv_file">#}
+{#        {% for file in csv_files %}#}
+{#            <option value="{{ file }}">{{ file }}</option>#}
+{#        {% endfor %}#}
+{#    </select>#}
+{#    <input type="submit" value="Use Selected CSV">#}
+{#</form>#}
 <br>
 <br>
 
@@ -201,14 +343,14 @@
 {#    <button class="center-button" onclick="toggleButtonSelection1(this)">Zentralfriedhof</button>#}
 {#</div>#}
 
-<form method="POST" action="/main">
-    <label>Select Unique IDs:</label><br>
-    {% for unique_id in unique_ids %}
-        <input type="checkbox" name="unique_ids" value="{{ unique_id }}" id="{{ unique_id }}">
-        <label for="{{ unique_id }}">{{ unique_id }}</label><br>
-    {% endfor %}
-    <button type="submit">Submit</button>
-</form>
+{#<form method="POST" action="/submit">#}
+{#    <label>Select Unique IDs:</label><br>#}
+{#    {% for unique_id in unique_ids %}#}
+{#        <input type="checkbox" name="unique_ids" value="{{ unique_id }}" id="{{ unique_id }}">#}
+{#        <label for="{{ unique_id }}">{{ unique_id }}</label><br>#}
+{#    {% endfor %}#}
+{#    <button type="submit">Submit</button>#}
+{#</form>#}
 
 
 <br>
@@ -634,6 +776,18 @@ let activeClusteringButton = null;
         document.getElementById('selectedValue3Input').value = selected_value3;
 
         {#console.log("Submitting with values:", selected_value, selected_value1, selected_value2, selected_value3);#}
+        let selectedIds = Array.from(document.querySelectorAll('input[name="unique_ids"]:checked'))
+        .map(checkbox => checkbox.value);
+
+        // Check if two IDs are selected and set them to the hidden inputs
+        if (selectedIds.length >= 2) {
+            document.getElementById("id1").value = selectedIds[0];  // Set value for id1
+            document.getElementById("id2").value = selectedIds[1];  // Set value for id2
+        } else {
+            // Handle cases where less than two IDs are selected, if needed
+            document.getElementById("id1").value = selectedIds[0] || '';  // Default to empty if not selected
+            document.getElementById("id2").value = '';  // Clear id2 if not selected
+        }
 
         document.getElementById('submitForm').submit();
 
