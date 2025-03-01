@@ -8,7 +8,7 @@ from csvcon import yaml_to_csv
 from csvcon2 import extract_to_csv
 from temp_delay import temp_delay
 from dfgg import dfg
-from flask import render_template
+from flask import render_template, flash, redirect, url_for
 from markupsafe import Markup
 import yaml
 import pandas as pd
@@ -103,7 +103,10 @@ def upload_file():
         # Read and extract unique IDs after file is saved
         try:
             df = pd.read_csv(FILENAME, usecols=['stop/attr'])
-            unique_ids = df['stop/attr'].dropna().unique().tolist()
+            unique_ids = df['stop/attr'].dropna()
+            # Remove 'traffic' and any IDs that occur only once
+            unique_ids = unique_ids[~unique_ids.isin(['traffic'])]
+            unique_ids = unique_ids[unique_ids.duplicated(keep=False)].unique().tolist()
             return jsonify({
                 "success": True,
                 "filename": file.filename,
@@ -147,7 +150,7 @@ def show_graph():
                            image_url=image_url)
 
 
-@app.route('/main', methods=['POST'])
+@app.route('/main', methods=['POST','GET'])
 def main():
     selected_ids = request.form.getlist('unique_ids')
 
@@ -194,38 +197,70 @@ def submit():
 #------------------
     global FILENAME
 
-    # if selected_value == "Temperature":
-    #     td_csv = None
-    if selected_value2 == "K means":
-        # if k means
-        td_csv = temp_delay(FILENAME, selected_value2, selectedKMeansValue, selected_ids)
-    if selected_value2 == "DBSCAN":
-        # if dbscan
-        td_csv = temp_delay(FILENAME, selected_value2, selectDBSCANValue, selected_ids)
-    if selected_value2 == "Agglomerative":
-        td_csv = temp_delay(FILENAME, selected_value2, selectedAggloValue, selected_ids)
+    try:
+        if selected_value2 == "K means":
+            # if k means
+            td_csv = temp_delay(FILENAME, selected_value2, selectedKMeansValue, selected_ids)
+        elif selected_value2 == "DBSCAN":
+            # if dbscan
+            td_csv = temp_delay(FILENAME, selected_value2, selectDBSCANValue, selected_ids)
+        elif selected_value2 == "Agglomerative":
+            td_csv = temp_delay(FILENAME, selected_value2, selectedAggloValue, selected_ids)
 
-    if td_csv is not None:
-        if selected_value1 == "Directly Followed Graph":
-            image_path = dfg(td_csv, selected_value3, dfg_variant)
-            image_url = url_for('static', filename=os.path.basename(image_path))
-        elif selected_value1 == "Inductive Miner":
-            image_path = inductive(td_csv, inductive_variant, selected_value3)
-            image_url = url_for('static', filename=os.path.basename(image_path))
-        elif selected_value1 == "Heuristics Miner":
-            image_path = heuristics(td_csv, heuristics_variant)
-            image_url = url_for('static', filename=os.path.basename(image_path))
-        elif selected_value1 == "Alpha Miner":
-            image_path = alpha(td_csv, alpha_variant, selected_value3)
-            image_url = url_for('static', filename=os.path.basename(image_path))
+        if len(td_csv) < 2:
+            flash('Not enough data points to cluster. Please select more data.', 'error')
+            return render_template('main.html', selected_value2=selected_value2)
 
-    return render_template('direct_graph.html',
-                           image_url=image_url,
-                           selected_value=selected_value,
-                           # selectedArea=selectedArea,
-                           selected_value2=selected_value2,
-                           selected_value1=selected_value1,
-                           selected_ids=selected_ids)
+        # Only reach this part if clustering succeeds and td_csv is valid
+        if td_csv is not None:
+            if selected_value1 == "Directly Followed Graph":
+                image_path = dfg(td_csv, selected_value3, dfg_variant)
+            elif selected_value1 == "Inductive Miner":
+                image_path = inductive(td_csv, inductive_variant, selected_value3)
+            elif selected_value1 == "Heuristics Miner":
+                image_path = heuristics(td_csv, heuristics_variant)
+            elif selected_value1 == "Alpha Miner":
+                image_path = alpha(td_csv, alpha_variant, selected_value3)
+
+            image_url = url_for('static', filename=os.path.basename(image_path))
+            # flash('Clustering and process discovery successful!', 'success')
+            return render_template('direct_graph.html',
+                                   image_url=image_url,
+                                   selected_value=selected_value,
+                                   selected_value2=selected_value2,
+                                   selected_value1=selected_value1,
+                                   selected_ids=selected_ids)
+
+    except ValueError as e:
+        # Specifically catch the "n_samples < n_clusters" error
+        if 'n_samples' in str(e):
+            flash('Clustering failed: Not enough data points for the number of clusters requested. Please go back and reselect ids or number of clusters', 'error')
+        elif 'Found array with 0 sample(s)' in str(e):
+            flash('Clustering failed: No data exists for one of the selected ids. Please go back and reselect a new one.', 'error')
+        else:
+            flash(f'Clustering failed: {str(e)}', 'error')
+
+        return render_template('main.html', selected_value2=selected_value2)
+
+    except ValueError as e:
+        # Specifically catch the "n_samples < n_clusters" error
+        if 'n_samples' in str(e):
+            flash(
+                'Clustering failed: Not enough data points for the number of clusters requested. Please go back and reselect ids or number of clusters',
+                'error')
+        elif 'Found array with 0 sample(s)' in str(e):
+            flash(
+                'Clustering failed: No data exists for one of the selected ids. Please go back and reselect a new one.',
+                'error')
+        else:
+            flash(f'Clustering failed: {str(e)}', 'error')
+
+        return render_template('main.html', selected_value2=selected_value2)
+
+    except TypeError as e:
+        flash(f"Error: {e}", 'error')
+        print(f"Error: {e}")
+        return render_template('main.html', selected_value2=selected_value2)
 
 if __name__ == '__main__':
 
