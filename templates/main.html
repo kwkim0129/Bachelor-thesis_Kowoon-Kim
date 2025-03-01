@@ -126,6 +126,35 @@
       visibility: visible;
       opacity: 1;
     }
+    ul.flash {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Flash message for error category */
+.flash.error {
+    background-color: #f8d7da; /* Light red background */
+    color: #721c24; /* Dark red text */
+    border: 1px solid #f5c6cb; /* Red border */
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Flash message for success category */
+.flash.success {
+    background-color: #d4edda; /* Light green background */
+    color: #155724; /* Dark green text */
+    border: 1px solid #c3e6cb; /* Green border */
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
     {#input, textarea {#}
     {#    width: 100%;#}
     {#    padding: 10px;#}
@@ -181,7 +210,6 @@
     </form>
     <p id="responseMessage"></p>
 
-    <!-- recent one -->
     <div id="uniqueIdsContainer" style="display:none;">
         <h3>Select Unique IDs:</h3>
         <form method="POST" action="/main" id="uniqueIdsForm">
@@ -189,10 +217,19 @@
             <button type="button" id="submitIdsBtn">Submit</button>
         </form>
     </div>
-    <!------recent one ---------->
 </div>
 
-
+<body>
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <ul>
+            {% for category, message in messages %}
+                <li class="flash {{ category }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
+</body>
 
 <script>
 document.getElementById("useCsvBtn").addEventListener("click", function() {
