@@ -7,11 +7,18 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
 
 def cluster_data(df, stop_attr, parameter, clustering_method):
     """Function to apply clustering to a specific stop attribute."""
     df_filtered = df[df['stop/attr'] == stop_attr].copy()
     df_filtered['stream_value'] = pd.to_numeric(df_filtered['stream_value'], errors='coerce')
+    if df_filtered['stream_value'].isna().any():
+        raise TypeError(
+            "Selected ids contain non-numeric data. Cannot apply min/max operations on non-numeric values.")
+
     df_filtered['stream_value'] = df_filtered['stream_value'].fillna(df_filtered['stream_value'].mean())
 
     # Remove 0.0 and NaN values
@@ -40,13 +47,14 @@ def cluster_data(df, stop_attr, parameter, clustering_method):
             for cluster_label in range(parameter)}
 
     elif clustering_method == "DBSCAN":
-        model = DBSCAN(eps=parameter, min_samples=5)
+        model = DBSCAN(eps=parameter, min_samples=3)
         df_filtered['cluster_label'] = model.fit_predict(X_scaled)
         unique_clusters = np.unique(df_filtered['cluster_label'])
         unique_clusters = unique_clusters[unique_clusters != -1]  # Exclude noise (-1)
         cluster_names = {
-            cluster_label: f"{stop_attr}_{df_filtered.loc[df_filtered['cluster_label'] == cluster_label, 'stream_value'].min():.2f}-{df_filtered.loc[df_filtered['cluster_label'] == cluster_label, 'stream_value'].max():.2f}"
+            cluster_label: f"{str(stop_attr)}_{df_filtered.loc[df_filtered['cluster_label'] == cluster_label, 'stream_value'].min():.2f}-{df_filtered.loc[df_filtered['cluster_label'] == cluster_label, 'stream_value'].max():.2f}"
             for cluster_label in unique_clusters}
+
 
     else:
         raise ValueError(f"Unsupported clustering method: {clustering_method}")
@@ -79,6 +87,6 @@ def temp_delay(csvfile, clustering, clusters, selected_ids):
     return output_file
 
 if __name__ == "__main__":
-    temp_delay('input.csv', 'K means')  # Replace with your actual file and method
+    temp_delay('input.csv', 'K means', 3, ['id1, id2'])  # Replace with your actual file and method
 
 
