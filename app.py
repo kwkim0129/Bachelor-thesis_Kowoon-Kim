@@ -128,12 +128,23 @@ def generate_buttons():
     try:
         print(f"Reading file: {FILENAME}")  # Debugging output
         df = pd.read_csv(FILENAME, usecols=['stop/attr'])
+
         unique_ids = df['stop/attr'].dropna().unique().tolist()
         print(f"Extracted unique IDs: {unique_ids}")  # Debugging output
-        return jsonify({"unique_ids": unique_ids})  # Send JSON response
+        return jsonify({"unique_ids": unique_ids})
+
+    except pd.errors.EmptyDataError:
+        print("The file is empty.")
+        return jsonify({"error": "The file is empty."}), 400
+
+    except KeyError as e:
+        print(f"Missing expected column: {e}")
+        return jsonify({"error": f"Missing expected column: {e}"}), 400
+
     except Exception as e:
         print(f"Error processing file: {e}")  # Debugging output
         return jsonify({"error": f"Error processing file: {e}"}), 500
+
 
 
 @app.route('/direct_graph', methods=['POST'])
@@ -153,6 +164,10 @@ def show_graph():
 @app.route('/main', methods=['POST','GET'])
 def main():
     selected_ids = request.form.getlist('unique_ids')
+
+    # Exclude 'traffic' if the input file is 'vienna-line-71.xes.csv'
+    if request.files.get('file') and request.files['file'].filename == 'vienna-line-71.xes.csv':
+        selected_ids = [id for id in selected_ids if id != 'traffic']
 
     session['selected_ids'] = selected_ids
 
