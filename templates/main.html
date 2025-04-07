@@ -269,22 +269,28 @@ document.getElementById("useCsvBtn").addEventListener("click", function() {
 });
 
 // ✅ Submit selected IDs without page reload
-document.getElementById("submitIdsBtn").addEventListener("click", function() {
+document.getElementById("submitIdsBtn").addEventListener("click", function () {
     let selectedIds = Array.from(document.querySelectorAll('input[name="unique_ids"]:checked'))
         .map(checkbox => `unique_ids=${encodeURIComponent(checkbox.value)}`)
-        .join("&"); // Join with '&' for correct form encoding
+        .join("&");
 
-    fetch("/main", {
+    const basePath = window.location.pathname.split('/').slice(0, 3).join('/');
+
+    fetch(`${basePath}/main`, {
         method: "POST",
-        body: selectedIds,  // Correctly formatted query string
+        body: selectedIds,
         headers: { "Content-Type": "application/x-www-form-urlencoded" }
     })
-    .then(response => response.text())
-    .then(data => {
-        document.getElementById("responseMessage").innerText = "IDs submitted successfully!";
-    })
-    .catch(error => console.error("Error:", error));
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById("responseMessage").innerText = "IDs submitted successfully!";
+        })
+        .catch(error => {
+            document.getElementById("responseMessage").innerText = "Error submitting IDs.";
+            console.error("Error:", error);
+        });
 });
+
 
 // ✅ Restore selected CSV on page load
 document.addEventListener("DOMContentLoaded", function() {
@@ -810,34 +816,38 @@ let activeClusteringButton = null;
         console.log("Area parameter to pass:", selectedArea);
     }
 
-    function submitForm() {
-        if (!selected_value1 && !selected_value2 && !selected_value) {
-            alert("Please select all options before submitting.");
-            return false;
-        }
-        document.getElementById('selectedValueInput').value = selected_value;
-        document.getElementById('selectedValue1Input').value = selected_value1;
-        document.getElementById('selectedValue2Input').value = selected_value2;
-        document.getElementById('selectedValue3Input').value = selected_value3;
+   function submitForm() {
+    if (!selected_value1 && !selected_value2 && !selected_value) {
+        alert("Please select all options before submitting.");
+        return false;
+    }
 
-        {#console.log("Submitting with values:", selected_value, selected_value1, selected_value2, selected_value3);#}
-        let selectedIds = Array.from(document.querySelectorAll('input[name="unique_ids"]:checked'))
+    // Set selected values in hidden inputs
+    document.getElementById('selectedValueInput').value = selected_value;
+    document.getElementById('selectedValue1Input').value = selected_value1;
+    document.getElementById('selectedValue2Input').value = selected_value2;
+    document.getElementById('selectedValue3Input').value = selected_value3;
+
+    let selectedIds = Array.from(document.querySelectorAll('input[name="unique_ids"]:checked'))
         .map(checkbox => checkbox.value);
 
-        // Check if two IDs are selected and set them to the hidden inputs
-        if (selectedIds.length >= 2) {
-            document.getElementById("id1").value = selectedIds[0];  // Set value for id1
-            document.getElementById("id2").value = selectedIds[1];  // Set value for id2
-        } else {
-            // Handle cases where less than two IDs are selected, if needed
-            document.getElementById("id1").value = selectedIds[0] || '';  // Default to empty if not selected
-            document.getElementById("id2").value = '';  // Clear id2 if not selected
-        }
-
-        document.getElementById('submitForm').submit();
-
-        {#console.log("Form submitted with values:", selected_value, selected_value1, selected_value2, selected_value3);#}
+    // Set id1 and id2 values
+    if (selectedIds.length >= 2) {
+        document.getElementById("id1").value = selectedIds[0];
+        document.getElementById("id2").value = selectedIds[1];
+    } else {
+        document.getElementById("id1").value = selectedIds[0] || '';
+        document.getElementById("id2").value = '';
     }
+
+    // Dynamically detect and set form action to include the base path
+    const basePath = window.location.pathname.split('/').slice(0, 3).join('/');
+    document.getElementById('submitForm').action = `${basePath}/main`;
+
+    // Submit the form
+    document.getElementById('submitForm').submit();
+}
+
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
