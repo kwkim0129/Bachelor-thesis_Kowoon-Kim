@@ -301,7 +301,10 @@ document.getElementById('uploadForm').addEventListener('submit', function(e) {
 
     let formData = new FormData(this);
 
-    fetch('/upload', {
+    // Dynamically detect base path (e.g., /ports/5000)
+    const basePath = window.location.pathname.split('/').slice(0, 3).join('/');
+
+    fetch(`${basePath}/upload`, {
         method: 'POST',
         body: formData
     })
@@ -328,8 +331,12 @@ document.getElementById('uploadForm').addEventListener('submit', function(e) {
             document.getElementById('responseMessage').innerText = data.error;
         }
     })
-    .catch(error => console.error('Error:', error));
+    .catch(error => {
+        document.getElementById('responseMessage').innerText = "Error uploading file.";
+        console.error('Error:', error);
+    });
 });
+
 
 
 </script>
