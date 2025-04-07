@@ -254,7 +254,25 @@ document.getElementById("useCsvBtn").addEventListener("click", function () {
     })
     .then(response => response.json())  // Expect JSON response with unique IDs
     .then(data => {
-        const unique
+        const uniqueIdsContainer = document.getElementById("uniqueIdsContainer");
+        const uniqueIdsList = document.getElementById("uniqueIdsList");
+
+        uniqueIdsList.innerHTML = ""; // Clear previous list
+
+        data.unique_ids.forEach(id => {
+            uniqueIdsList.innerHTML += `
+                <input type="checkbox" name="unique_ids" value="${id}" id="${id}">
+                <label for="${id}">${id}</label><br>
+            `;
+        });
+
+        uniqueIdsContainer.style.display = "block"; // Show the section
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        document.getElementById("responseMessage").innerText = "Error using CSV or fetching IDs.";
+    });
+});
 
 
 // ✅ Submit selected IDs without page reload
