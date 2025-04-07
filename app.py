@@ -14,6 +14,7 @@ import yaml
 import pandas as pd
 from heuristics import heuristics
 from flask import session
+import logging
 
 from werkzeug.utils import secure_filename
 
@@ -74,9 +75,12 @@ def use_existing_csv():
 #         return render_template('yaml.html', yaml_data=formatted_yaml)
 
 # upload yaml
+logging.basicConfig(level=logging.INFO)
+
 @app.route('/upload', methods=['POST'])
 def upload_file():
-    print("Upload endpoint hit!", flush=True)
+    logging.info("Upload endpoint hit!")
+
 
     if 'file' not in request.files:
         return jsonify({"error": "No file part"}), 400
