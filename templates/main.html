@@ -232,41 +232,30 @@
 </body>
 
 <script>
-document.getElementById("useCsvBtn").addEventListener("click", function() {
-    var selectElement = document.getElementById("csv_file");
-    var selectedFile = selectElement.value;
+document.getElementById("useCsvBtn").addEventListener("click", function () {
+    const basePath = window.location.pathname.split('/').slice(0, 3).join('/');
+    const selectElement = document.getElementById("csv_file");
+    const selectedFile = selectElement.value;
 
-    fetch("/use_existing_csv", {
+    fetch(`${basePath}/use_existing_csv`, {
         method: "POST",
         body: new URLSearchParams({ csv_file: selectedFile }),
         headers: { "Content-Type": "application/x-www-form-urlencoded" }
     })
-    .then(response => response.text())
-    .then(data => {
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Failed to select existing CSV");
+        }
         document.getElementById("responseMessage").innerText = "File selected successfully!";
         localStorage.setItem("selectedCSV", selectedFile);
 
         // ✅ Fetch unique IDs after selecting the file
-        return fetch("/generate_buttons");
+        return fetch(`${basePath}/generate_buttons`);
     })
     .then(response => response.json())  // Expect JSON response with unique IDs
     .then(data => {
-        let uniqueIdsContainer = document.getElementById("uniqueIdsContainer");
-        let uniqueIdsList = document.getElementById("uniqueIdsList");
+        const unique
 
-        uniqueIdsList.innerHTML = ""; // Clear previous list
-
-        data.unique_ids.forEach(id => {
-            uniqueIdsList.innerHTML += `
-                <input type="checkbox" name="unique_ids" value="${id}" id="${id}">
-                <label for="${id}">${id}</label><br>
-            `;
-        });
-
-        uniqueIdsContainer.style.display = "block"; // Show the section
-    })
-    .catch(error => console.error("Error:", error));
-});
 
 // ✅ Submit selected IDs without page reload
 document.getElementById("submitIdsBtn").addEventListener("click", function () {
