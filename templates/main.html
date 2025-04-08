@@ -232,11 +232,13 @@
 </body>
 
 <script>
-document.getElementById("useCsvBtn").addEventListener("click", function() {
+document.getElementById("useCsvBtn").addEventListener("click", function () {
     var selectElement = document.getElementById("csv_file");
     var selectedFile = selectElement.value;
 
-    const basePath = window.location.pathname.split('/').slice(0, 2).join('/');
+    // ✅ Build correct base path dynamically (e.g., /ports/5000 or /myapp)
+    const basePath = window.location.pathname.split('/').slice(0, 3).join('/');
+
     fetch(`${basePath}/use_existing_csv`, {
         method: "POST",
         body: new URLSearchParams({ csv_file: selectedFile }),
@@ -252,7 +254,7 @@ document.getElementById("useCsvBtn").addEventListener("click", function() {
         document.getElementById("responseMessage").innerText = data.message || "File selected successfully!";
         localStorage.setItem("selectedCSV", selectedFile);
 
-        // ✅ Now fetch unique IDs after selecting the file
+        // ✅ Fetch unique IDs with correct path
         return fetch(`${basePath}/generate_buttons`);
     })
     .then(response => response.json())
@@ -276,6 +278,7 @@ document.getElementById("useCsvBtn").addEventListener("click", function() {
         document.getElementById("responseMessage").innerText = "❌ Failed to select existing CSV.";
     });
 });
+
 
 
 
@@ -849,21 +852,20 @@ let activeClusteringButton = null;
         .map(checkbox => checkbox.value);
 
     // Set id1 and id2 values
-    if (selectedIds.length >= 2) {
-        document.getElementById("id1").value = selectedIds[0];
-        document.getElementById("id2").value = selectedIds[1];
-    } else {
-        document.getElementById("id1").value = selectedIds[0] || '';
-        document.getElementById("id2").value = '';
-    }
+    document.getElementById("id1").value = selectedIds[0] || '';
+    document.getElementById("id2").value = selectedIds[1] || '';
 
-    // Dynamically detect and set form action to include the base path
-    const basePath = window.location.pathname.split('/').slice(0, 3).join('/');
-    document.getElementById('submitForm').action = `${basePath}/main`;
+    // ✅ Dynamically detect and set form action to include correct base path
+    const pathnameParts = window.location.pathname.split('/');
+    const basePath = pathnameParts.slice(0, pathnameParts.indexOf('main')).join('/') || '';
+    const fullPath = `${basePath}/main`;
 
-    // Submit the form
+    document.getElementById('submitForm').action = fullPath;
+
+    // ✅ Submit the form
     document.getElementById('submitForm').submit();
 }
+
 
 </script>
 
