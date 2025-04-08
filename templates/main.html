@@ -836,16 +836,42 @@ let activeClusteringButton = null;
         console.log("Area parameter to pass:", selectedArea);
     }
 
-   function submitForm() {
-    // Check that all necessary selections are made
-    if (!selected_value1 && !selected_value2 && !selected_value) {
+   <script>
+       
+function submitForm() {
+    // Make sure the variables are defined in the global scope or fetched safely
+    const selected_value  = typeof window.selected_value !== 'undefined' ? window.selected_value : '';
+    const selected_value1 = typeof window.selected_value1 !== 'undefined' ? window.selected_value1 : '';
+    const selected_value2 = typeof window.selected_value2 !== 'undefined' ? window.selected_value2 : '';
+    const selected_value3 = typeof window.selected_value3 !== 'undefined' ? window.selected_value3 : '';
+
+    // Validate selections
+    if (!selected_value || !selected_value1 || !selected_value2) {
         alert("Please select all options before submitting.");
         return false;
     }
 
-    // Set hidden inputs with selected values
-    const valInput  = document.getElementById('selectedValueInput');
-    const val1Input = document.getElement
+    // Set hidden input values
+    document.getElementById('selectedValueInput').value  = selected_value;
+    document.getElementById('selectedValue1Input').value = selected_value1;
+    document.getElementById('selectedValue2Input').value = selected_value2;
+    document.getElementById('selectedValue3Input').value = selected_value3;
+
+    // Handle selected unique IDs
+    let selectedIds = Array.from(document.querySelectorAll('input[name="unique_ids"]:checked'))
+        .map(checkbox => checkbox.value);
+
+    if (selectedIds.length >= 2) {
+        document.getElementById("id1").value = selectedIds[0];
+        document.getElementById("id2").value = selectedIds[1];
+    } else {
+        document.getElementById("id1").value = selectedIds[0] || '';
+        document.getElementById("id2").value = '';
+    }
+
+    // Submit the form manually
+    document.getElementById('submitForm').submit();
+}
 
 
 </script>
