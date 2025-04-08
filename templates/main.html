@@ -590,25 +590,31 @@ document.getElementById('uploadForm').addEventListener('submit', function(e) {
 
     // Example button selection functions remain the same
     function selectButton1(button) {
-        const buttons = document.querySelectorAll('#buttons-processDiscovery .circular-button');
+    const buttons = document.querySelectorAll('#buttons-processDiscovery .circular-button');
 
-        // Deselect all buttons first
-        buttons.forEach(btn => {
-            btn.classList.remove('selected');
-        });
+    // Deselect all buttons first
+    buttons.forEach(btn => {
+        btn.classList.remove('selected');
+    });
 
-        // Select the clicked button
-        button.classList.add('selected');
-        selected_value1 = button.innerText;
-        console.log("Button selected:", button.innerText);
+    // Select the clicked button
+    button.classList.add('selected');
+    selected_value1 = button.innerText;
+    console.log("Button selected:", button.innerText);
 
-        // If Directly Followed Graph is clicked, show the DFG options
+    // Handle DFG options visibility safely
+    const dfgOptions = document.getElementById('dfg-options');
+    if (dfgOptions) {
         if (button.innerText === "Directly Followed Graph") {
-            document.getElementById('dfg-options').style.display = 'block';
+            dfgOptions.style.display = 'block';
         } else {
-            document.getElementById('dfg-options').style.display = 'none';  // Hide if not selected
+            dfgOptions.style.display = 'none';
         }
+    } else {
+        console.warn("Element with ID 'dfg-options' not found in the DOM.");
     }
+}
+
 
     function selectButton2(button) {
     const buttons = document.querySelectorAll('#buttons-clustering .circular-button');
