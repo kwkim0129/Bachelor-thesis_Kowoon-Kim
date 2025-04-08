@@ -501,7 +501,7 @@ document.getElementById('uploadForm').addEventListener('submit', function(e) {
 
 <div class="form-container">
 <!-- <form id="submitForm" action="/submit" method="POST" onsubmit="submitForm()"> -->
-<form id="submitForm" method="POST" onsubmit="submitForm(); return false;">
+<form id="submitForm" action="/submit" method="POST" onsubmit="submitForm(); return false;">
     
     <input type="hidden" name="selectedArea" id="selectedAreaInput" value="">
     <input type="hidden" name="selected_value" id="selectedValueInput" value="">
