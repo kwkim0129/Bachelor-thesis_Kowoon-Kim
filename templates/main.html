@@ -836,42 +836,43 @@ let activeClusteringButton = null;
         console.log("Area parameter to pass:", selectedArea);
     }
 
-   <script>
-       
-function submitForm() {
-    // Make sure the variables are defined in the global scope or fetched safely
-    const selected_value  = typeof window.selected_value !== 'undefined' ? window.selected_value : '';
-    const selected_value1 = typeof window.selected_value1 !== 'undefined' ? window.selected_value1 : '';
-    const selected_value2 = typeof window.selected_value2 !== 'undefined' ? window.selected_value2 : '';
-    const selected_value3 = typeof window.selected_value3 !== 'undefined' ? window.selected_value3 : '';
-
-    // Validate selections
-    if (!selected_value || !selected_value1 || !selected_value2) {
+   function submitForm() {
+    if (!selected_value1 && !selected_value2 && !selected_value) {
         alert("Please select all options before submitting.");
         return false;
     }
 
-    // Set hidden input values
-    document.getElementById('selectedValueInput').value  = selected_value;
-    document.getElementById('selectedValue1Input').value = selected_value1;
-    document.getElementById('selectedValue2Input').value = selected_value2;
-    document.getElementById('selectedValue3Input').value = selected_value3;
+    const valInput = document.getElementById('selectedValueInput');
+    const val1Input = document.getElementById('selectedValue1Input');
+    const val2Input = document.getElementById('selectedValue2Input');
+    const val3Input = document.getElementById('selectedValue3Input');
 
-    // Handle selected unique IDs
+    if (valInput) valInput.value = selected_value;
+    if (val1Input) val1Input.value = selected_value1;
+    if (val2Input) val2Input.value = selected_value2;
+    if (val3Input) val3Input.value = selected_value3;
+
     let selectedIds = Array.from(document.querySelectorAll('input[name="unique_ids"]:checked'))
         .map(checkbox => checkbox.value);
 
-    if (selectedIds.length >= 2) {
-        document.getElementById("id1").value = selectedIds[0];
-        document.getElementById("id2").value = selectedIds[1];
-    } else {
-        document.getElementById("id1").value = selectedIds[0] || '';
-        document.getElementById("id2").value = '';
-    }
+    const id1Input = document.getElementById("id1");
+    const id2Input = document.getElementById("id2");
 
-    // Submit the form manually
-    document.getElementById('submitForm').submit();
+    if (id1Input) id1Input.value = selectedIds[0] || '';
+    if (id2Input) id2Input.value = selectedIds[1] || '';
+
+    // Detect base path
+    const pathnameParts = window.location.pathname.split('/');
+    const basePath = pathnameParts.slice(0, pathnameParts.indexOf('main')).join('/') || '';
+    const fullPath = `${basePath}/main`;
+
+    const form = document.getElementById('submitForm');
+    if (form) {
+        form.action = fullPath;
+        form.submit();
+    }
 }
+
 
 
 </script>
