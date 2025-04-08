@@ -500,7 +500,9 @@ document.getElementById('uploadForm').addEventListener('submit', function(e) {
 </div>
 
 <div class="form-container">
-<form id="submitForm" action="/submit" method="POST" onsubmit="submitForm()">
+<!-- <form id="submitForm" action="/submit" method="POST" onsubmit="submitForm()"> -->
+<form id="submitForm" action="/submit" method="POST" onsubmit="return submitForm()">
+    
     <input type="hidden" name="selectedArea" id="selectedAreaInput" value="">
     <input type="hidden" name="selected_value" id="selectedValueInput" value="">
     <input type="hidden" name="selected_value1" id="selectedValue1Input" value="">
@@ -854,12 +856,17 @@ function submitForm() {
     document.getElementById("id1").value = selectedIds[0] || '';
     document.getElementById("id2").value = selectedIds[1] || '';
 
-    // ✅ Make sure the form action is explicitly set to /submit
+    // // ✅ Make sure the form action is explicitly set to /submit
+    // const form = document.getElementById('submitForm');
+    // if (form) {
+    //     form.action = '/submit';
+    //     form.submit();
+    // } 안되면 밑 삭제하고 이거 주석 해제
+    // ✅ Optional: Double check you're submitting to /submit
     const form = document.getElementById('submitForm');
-    if (form) {
-        form.action = '/submit';
-        form.submit();
-    }
+    form.action = '/submit';
+
+    return true;  // Allow the form to submit now
 }
 
 
