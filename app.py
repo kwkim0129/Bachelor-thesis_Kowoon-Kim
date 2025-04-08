@@ -42,37 +42,9 @@ def use_existing_csv():
     selected_file = request.form.get('csv_file')
     if selected_file:
         global FILENAME
-        FILENAME = os.path.join(CSV_FOLDER, selected_file)  # Set FILENAME to the selected CSV path
-        return redirect(url_for('generate_buttons'))  # Redirect to generate_buttons to display unique_ids
-    return "No file selected", 400
-
-
-# @app.route('/yaml')
-# def yaml_view():
-#     if request.method == 'POST':
-#         # Check if a file was uploaded
-#         if 'file' not in request.files:
-#             return "No file part", 400
-#
-#         file = request.files['file']
-#
-#         # If no file is selected
-#         if file.filename == '':
-#             return "No selected file", 400
-#
-#         # Save the file securely
-#         filename = secure_filename(file.filename)
-#         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-#         file.save(file_path)
-#
-#         # Read the content of the uploaded file
-#         with open(file_path, 'r') as uploaded_file:
-#             yaml_content = uploaded_file.read()
-#
-#         # Format the YAML content for HTML rendering
-#         formatted_yaml = Markup("<pre>" + yaml_content + "</pre>")
-#
-#         return render_template('yaml.html', yaml_data=formatted_yaml)
+        FILENAME = os.path.join(CSV_FOLDER, selected_file)
+        return jsonify({'message': 'CSV file selected successfully'})
+    return jsonify({'error': 'No file selected'}), 400
 
 # upload yaml
 logging.basicConfig(level=logging.INFO)
