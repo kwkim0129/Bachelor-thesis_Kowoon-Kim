@@ -837,23 +837,26 @@ let activeClusteringButton = null;
     }
 
    function submitForm() {
+    // Check that all necessary selections are made
     if (!selected_value1 && !selected_value2 && !selected_value) {
         alert("Please select all options before submitting.");
         return false;
     }
 
-    const valInput = document.getElementById('selectedValueInput');
+    // Get and set hidden input values if present
+    const valInput  = document.getElementById('selectedValueInput');
     const val1Input = document.getElementById('selectedValue1Input');
     const val2Input = document.getElementById('selectedValue2Input');
     const val3Input = document.getElementById('selectedValue3Input');
 
-    if (valInput) valInput.value = selected_value;
+    if (valInput)  valInput.value  = selected_value;
     if (val1Input) val1Input.value = selected_value1;
     if (val2Input) val2Input.value = selected_value2;
     if (val3Input) val3Input.value = selected_value3;
 
-    let selectedIds = Array.from(document.querySelectorAll('input[name="unique_ids"]:checked'))
-        .map(checkbox => checkbox.value);
+    // Get selected unique IDs from checkboxes
+    const selectedIds = Array.from(document.querySelectorAll('input[name="unique_ids"]:checked'))
+                             .map(checkbox => checkbox.value);
 
     const id1Input = document.getElementById("id1");
     const id2Input = document.getElementById("id2");
@@ -861,19 +864,15 @@ let activeClusteringButton = null;
     if (id1Input) id1Input.value = selectedIds[0] || '';
     if (id2Input) id2Input.value = selectedIds[1] || '';
 
-    // Detect base path
-    const pathnameParts = window.location.pathname.split('/');
-    const basePath = pathnameParts.slice(0, pathnameParts.indexOf('main')).join('/') || '';
-    const fullPath = `${basePath}/main`;
-
+    // ✅ POST to '/submit' so the graph is rendered
     const form = document.getElementById('submitForm');
     if (form) {
-        form.action = fullPath;
+        form.action = '/submit';
         form.submit();
+    } else {
+        console.error("Form with id 'submitForm' not found.");
     }
 }
-
-
 
 </script>
 
