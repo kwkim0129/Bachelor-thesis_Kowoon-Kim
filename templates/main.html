@@ -842,29 +842,37 @@ let activeClusteringButton = null;
         return false;
     }
 
-    // Set selected values in hidden inputs
-    document.getElementById('selectedValueInput').value = selected_value;
-    document.getElementById('selectedValue1Input').value = selected_value1;
-    document.getElementById('selectedValue2Input').value = selected_value2;
-    document.getElementById('selectedValue3Input').value = selected_value3;
+    const valInput = document.getElementById('selectedValueInput');
+    const val1Input = document.getElementById('selectedValue1Input');
+    const val2Input = document.getElementById('selectedValue2Input');
+    const val3Input = document.getElementById('selectedValue3Input');
+
+    if (valInput) valInput.value = selected_value;
+    if (val1Input) val1Input.value = selected_value1;
+    if (val2Input) val2Input.value = selected_value2;
+    if (val3Input) val3Input.value = selected_value3;
 
     let selectedIds = Array.from(document.querySelectorAll('input[name="unique_ids"]:checked'))
         .map(checkbox => checkbox.value);
 
-    // Set id1 and id2 values
-    document.getElementById("id1").value = selectedIds[0] || '';
-    document.getElementById("id2").value = selectedIds[1] || '';
+    const id1Input = document.getElementById("id1");
+    const id2Input = document.getElementById("id2");
 
-    // ✅ Dynamically detect and set form action to include correct base path
+    if (id1Input) id1Input.value = selectedIds[0] || '';
+    if (id2Input) id2Input.value = selectedIds[1] || '';
+
+    // Detect base path
     const pathnameParts = window.location.pathname.split('/');
     const basePath = pathnameParts.slice(0, pathnameParts.indexOf('main')).join('/') || '';
     const fullPath = `${basePath}/main`;
 
-    document.getElementById('submitForm').action = fullPath;
-
-    // ✅ Submit the form
-    document.getElementById('submitForm').submit();
+    const form = document.getElementById('submitForm');
+    if (form) {
+        form.action = fullPath;
+        form.submit();
+    }
 }
+
 
 
 </script>
