@@ -865,7 +865,7 @@ function submitForm() {
     // // 2nd solution 
     // const form = document.getElementById('submitForm');
     // form.action = '/submit';
-    document.getElementById('submitForm').action = "/submit";
+    document.getElementById('submitForm').action = window.location.pathname + "submit"; 
     document.getElementById('submitForm').submit();
 
     // return true;  // Allow the form to submit now
