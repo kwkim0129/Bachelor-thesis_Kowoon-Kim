@@ -500,10 +500,9 @@ document.getElementById('uploadForm').addEventListener('submit', function(e) {
 </div>
 
 <div class="form-container">
-<form id="submitForm" action="/submit" method="POST" onsubmit="submitForm()"> 3번째 안되면 이거 주석해제 
+<form id="submitForm" action="/submit" method="POST" onsubmit="submitForm()">
 <!-- <form id="submitForm" action="/submit" method="POST" onsubmit="submitForm(); return false;"> -->
-<!-- <form id="submitForm" method="POST" onsubmit="submitForm(event)"> -->
-
+    
     <input type="hidden" name="selectedArea" id="selectedAreaInput" value="">
     <input type="hidden" name="selected_value" id="selectedValueInput" value="">
     <input type="hidden" name="selected_value1" id="selectedValue1Input" value="">
@@ -515,8 +514,8 @@ document.getElementById('uploadForm').addEventListener('submit', function(e) {
     <input type="hidden" id="kmeansValue" name="selectedKMeansValue" value="3"> <!-- Default value is 3 -->
     <input type="hidden" id="dbscanVar" name="selectDBSCANValue" value="0.5">
     <input type="hidden" id="aggloVar" name="selectedAggloValue" value="2">
-    <input type="hidden" name="id1" id="id1" value="{{ id1 }}">
-    <input type="hidden" name="id2" id="id2" value="{{ id2 }}">
+    <input type="hidden" name="id1" value="{{ id1 }}">
+    <input type="hidden" name="id2" value="{{ id2 }}">
     <button type="submit" class="submit-button">Submit</button>
 </form>
 </div>
@@ -838,8 +837,6 @@ let activeClusteringButton = null;
     function passAreaToBackend() {
         console.log("Area parameter to pass:", selectedArea);
     }
-<script>
-
 
 function submitForm() {
     if (!selected_value1 && !selected_value2 && !selected_value) {
@@ -872,36 +869,7 @@ function submitForm() {
     document.getElementById('submitForm').submit();
 
     // return true;  // Allow the form to submit now
-} // 842부터 여기로 원상복구
-// function submitForm(event) { 이거를 하면 ids 값이 null 나옴
-//     event.preventDefault();  // ✅ Stop default submission
-
-//     let selectedIds = Array.from(document.querySelectorAll('input[name="unique_ids"]:checked'))
-//         .map(checkbox => checkbox.value);
-
-//     if (selectedIds.length >= 2) {
-//         document.getElementById("id1").value = selectedIds[0];
-//         document.getElementById("id2").value = selectedIds[1];
-//     } else {
-//         document.getElementById("id1").value = selectedIds[0] || '';
-//         document.getElementById("id2").value = '';
-//     }
-
-//     // Update hidden inputs
-//     document.getElementById('selectedValueInput').value = selected_value;
-//     document.getElementById('selectedValue1Input').value = selected_value1;
-//     document.getElementById('selectedValue2Input').value = selected_value2;
-//     document.getElementById('selectedValue3Input').value = selected_value3;
-
-//     // ✅ Dynamically build safe base path (e.g. /ports/5000 or /)
-//     const basePath = window.location.pathname.split('/').slice(0, 3).join('/');
-
-//     // ✅ Ensure form posts to the correct /submit path
-//     document.getElementById('submitForm').action = `${basePath}/submit`;
-
-//     // ✅ Now submit the form
-//     document.getElementById('submitForm').submit();
-// }
+}
 
 
 </script>
