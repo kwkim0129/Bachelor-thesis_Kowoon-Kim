@@ -500,9 +500,10 @@ document.getElementById('uploadForm').addEventListener('submit', function(e) {
 </div>
 
 <div class="form-container">
-<form id="submitForm" action="/submit" method="POST" onsubmit="submitForm()">
+<!-- <form id="submitForm" action="/submit" method="POST" onsubmit="submitForm()"> 3번째 안되면 이거 주석해제--> 
 <!-- <form id="submitForm" action="/submit" method="POST" onsubmit="submitForm(); return false;"> -->
-    
+<form id="submitForm" method="POST" onsubmit="submitForm(event)">
+
     <input type="hidden" name="selectedArea" id="selectedAreaInput" value="">
     <input type="hidden" name="selected_value" id="selectedValueInput" value="">
     <input type="hidden" name="selected_value1" id="selectedValue1Input" value="">
@@ -838,37 +839,66 @@ let activeClusteringButton = null;
         console.log("Area parameter to pass:", selectedArea);
     }
 
-function submitForm() {
-    if (!selected_value1 && !selected_value2 && !selected_value) {
-        alert("Please select all options before submitting.");
-        return false;
-    }
+// function submitForm() {
+//     if (!selected_value1 && !selected_value2 && !selected_value) {
+//         alert("Please select all options before submitting.");
+//         return false;
+//     }
 
-    document.getElementById('selectedValueInput').value  = selected_value;
-    document.getElementById('selectedValue1Input').value = selected_value1;
-    document.getElementById('selectedValue2Input').value = selected_value2;
-    document.getElementById('selectedValue3Input').value = selected_value3;
+//     document.getElementById('selectedValueInput').value  = selected_value;
+//     document.getElementById('selectedValue1Input').value = selected_value1;
+//     document.getElementById('selectedValue2Input').value = selected_value2;
+//     document.getElementById('selectedValue3Input').value = selected_value3;
+
+//     let selectedIds = Array.from(document.querySelectorAll('input[name="unique_ids"]:checked'))
+//         .map(checkbox => checkbox.value);
+
+//     // Always set the ID fields, even if only one or none are selected
+//     document.getElementById("id1").value = selectedIds[0] || '';
+//     document.getElementById("id2").value = selectedIds[1] || '';
+
+//     // // ✅ Make sure the form action is explicitly set to /submit
+//     // const form = document.getElementById('submitForm');
+//     // if (form) {
+//     //     form.action = '/submit';
+//     //     form.submit();
+//     // } 안되면 밑 삭제하고 이거 주석 해제
+//     // // 2nd solution 
+//     // const form = document.getElementById('submitForm');
+//     // form.action = '/submit';
+//     document.getElementById('submitForm').action = window.location.pathname + "submit"; 
+//     document.getElementById('submitForm').submit();
+
+//     // return true;  // Allow the form to submit now
+// }
+function submitForm(event) {
+    event.preventDefault();  // ✅ Stop default submission
 
     let selectedIds = Array.from(document.querySelectorAll('input[name="unique_ids"]:checked'))
         .map(checkbox => checkbox.value);
 
-    // Always set the ID fields, even if only one or none are selected
-    document.getElementById("id1").value = selectedIds[0] || '';
-    document.getElementById("id2").value = selectedIds[1] || '';
+    if (selectedIds.length >= 2) {
+        document.getElementById("id1").value = selectedIds[0];
+        document.getElementById("id2").value = selectedIds[1];
+    } else {
+        document.getElementById("id1").value = selectedIds[0] || '';
+        document.getElementById("id2").value = '';
+    }
 
-    // // ✅ Make sure the form action is explicitly set to /submit
-    // const form = document.getElementById('submitForm');
-    // if (form) {
-    //     form.action = '/submit';
-    //     form.submit();
-    // } 안되면 밑 삭제하고 이거 주석 해제
-    // // 2nd solution 
-    // const form = document.getElementById('submitForm');
-    // form.action = '/submit';
-    document.getElementById('submitForm').action = window.location.pathname + "submit"; 
+    // Update hidden inputs
+    document.getElementById('selectedValueInput').value = selected_value;
+    document.getElementById('selectedValue1Input').value = selected_value1;
+    document.getElementById('selectedValue2Input').value = selected_value2;
+    document.getElementById('selectedValue3Input').value = selected_value3;
+
+    // ✅ Dynamically build safe base path (e.g. /ports/5000 or /)
+    const basePath = window.location.pathname.split('/').slice(0, 3).join('/');
+
+    // ✅ Ensure form posts to the correct /submit path
+    document.getElementById('submitForm').action = `${basePath}/submit`;
+
+    // ✅ Now submit the form
     document.getElementById('submitForm').submit();
-
-    // return true;  // Allow the form to submit now
 }
 
 
