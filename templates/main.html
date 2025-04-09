@@ -510,17 +510,12 @@ document.getElementById('uploadForm').addEventListener('submit', function(e) {
     <input type="hidden" name="selected_value1" id="selectedValue1Input" value="">
     <input type="hidden" name="selected_value2" id="selectedValue2Input" value="">
     <input type="hidden" name="selected_value3" id="selectedValue3Input" value="">
-    
-    <!-- Process discovery variants -->
     <input type="hidden" name="dfg_variant" id="dfg-variant" value="">
     <input type="hidden" name="inductive_variant" id="inductive-variant" value="">
     <input type="hidden" name="heuristics_variant" id="heuristics-variant" value="">
-    <input type="hidden" name="alpha_variant" id="alpha-variant" value="">
-    
-    <!-- Clustering parameter values -->
-    <input type="hidden" name="selectedKMeansValue" id="kmeansValue" value="3">        <!-- Default K -->
-    <input type="hidden" name="selectDBSCANValue" id="dbscanVar" value="0.5">          <!-- Default eps -->
-    <input type="hidden" name="selectedAggloValue" id="aggloVar" value="2"> 
+    <input type="hidden" id="kmeansValue" name="selectedKMeansValue" value="3"> <!-- Default value is 3 -->
+    <input type="hidden" id="dbscanVar" name="selectDBSCANValue" value="0.5">
+    <input type="hidden" id="aggloVar" name="selectedAggloValue" value="2">
     <input type="hidden" name="id1" id="id1" value="{{ id1 }}">
     <input type="hidden" name="id2" id="id2" value="{{ id2 }}">
     <button type="submit" class="submit-button">Submit</button>
