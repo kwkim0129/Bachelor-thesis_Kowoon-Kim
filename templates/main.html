@@ -854,6 +854,12 @@ function submitForm() {
     document.getElementById('dbscanVar').value = selectDBSCANValue;
     document.getElementById('aggloVar').value = selectedAggloValue;
 
+    console.log("Submitting with:", {
+        kmeans: document.getElementById('kmeansValue').value,
+        dbscan: document.getElementById('dbscanVar').value,
+        agglo: document.getElementById('aggloVar').value
+    });
+
 
     let selectedIds = Array.from(document.querySelectorAll('input[name="unique_ids"]:checked'))
         .map(checkbox => checkbox.value);
