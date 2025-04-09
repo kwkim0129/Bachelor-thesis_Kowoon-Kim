@@ -218,6 +218,7 @@ def submit():
                 image_path = alpha(td_csv, alpha_variant, selected_value3)
 
             image_url = url_for('static', filename=os.path.basename(image_path), _external=True)
+
             # flash('Clustering and process discovery successful!', 'success')
             return render_template('direct_graph.html',
                                    image_url=image_url,
