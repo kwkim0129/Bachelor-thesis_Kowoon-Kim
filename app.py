@@ -19,6 +19,8 @@ import logging
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
+app.config['APPLICATION_ROOT'] = '/ports/5000'
+
 app.secret_key = 'supersecretkey123'
 
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50 MB
