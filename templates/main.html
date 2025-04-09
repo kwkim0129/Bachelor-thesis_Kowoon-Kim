@@ -697,39 +697,65 @@ let activeClusteringButton = null;
     }
 
 
+    // function selectDBSCANVariant(epsValue, button) {
+    //     selectDBSCANValue = epsValue;
+    //     document.getElementById('dbscanVar').value = selectDBSCANValue;
+    //     console.log("DBSCAN eps selected:", selectDBSCANValue);
+
+    //     if (activeClusteringButton) {
+    //         activeClusteringButton.classList.remove('btn-primary');
+    //         activeClusteringButton.classList.add('btn-secondary');
+    //     }
+
+    //     button.classList.remove('btn-secondary');
+    //     button.classList.add('btn-primary');
+
+    //     activeClusteringButton = button;
+
+    //     {#const buttons = document.querySelectorAll('.ml-2 .btn');#}
+    //     {#buttons.forEach(btn => {#}
+    //     {#    btn.classList.remove('btn-primary');#}
+    //     {#    btn.classList.add('btn-secondary');#}
+    //     {#});#}
+
+    //     // Highlight the clicked button
+    //     button.classList.remove('btn-secondary');
+    //     button.classList.add('btn-primary');
+
+    //     if (activeProcessDiscoveryButton) {
+    //         activeProcessDiscoveryButton.classList.add('btn-primary');
+    //     }
+
+    //     // Debugging purpose: log the selected variant
+    //     console.log("DBScan variant selected:", epsvalue);
+    // }
     function selectDBSCANVariant(epsValue, button) {
-        selectDBSCANValue = epsValue;
-        document.getElementById('dbscanVar').value = selectDBSCANValue;
-        console.log("DBSCAN eps selected:", selectDBSCANValue);
+    selectDBSCANValue = epsValue;
+    document.getElementById('dbscanVar').value = selectDBSCANValue;
+    console.log("DBSCAN eps selected:", selectDBSCANValue);
 
-        if (activeClusteringButton) {
-            activeClusteringButton.classList.remove('btn-primary');
-            activeClusteringButton.classList.add('btn-secondary');
-        }
-
-        button.classList.remove('btn-secondary');
-        button.classList.add('btn-primary');
-
-        activeClusteringButton = button;
-
-        {#const buttons = document.querySelectorAll('.ml-2 .btn');#}
-        {#buttons.forEach(btn => {#}
-        {#    btn.classList.remove('btn-primary');#}
-        {#    btn.classList.add('btn-secondary');#}
-        {#});#}
-
-        // Highlight the clicked button
-        button.classList.remove('btn-secondary');
-        button.classList.add('btn-primary');
-
-        if (activeProcessDiscoveryButton) {
-            activeProcessDiscoveryButton.classList.add('btn-primary');
-        }
-
-        // Debugging purpose: log the selected variant
-        console.log("DBScan variant selected:", epsvalue);
+    // Deselect previous clustering button
+    if (activeClusteringButton) {
+        activeClusteringButton.classList.remove('btn-primary');
+        activeClusteringButton.classList.add('btn-secondary');
     }
 
+    // Highlight the clicked button
+    button.classList.remove('btn-secondary');
+    button.classList.add('btn-primary');
+
+    activeClusteringButton = button;
+
+    // Keep process discovery button highlighted if already selected
+    if (activeProcessDiscoveryButton) {
+        activeProcessDiscoveryButton.classList.add('btn-primary');
+    }
+
+    // ✅ Corrected the typo here
+    console.log("DBSCAN variant selected:", epsValue);
+}
+
+     
     function passDBSCANParameterToBackend() {
         console.log("DBSCAN parameter to pass:", selectDBSCANValue);
     }
