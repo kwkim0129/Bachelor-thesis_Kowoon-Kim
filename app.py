@@ -217,7 +217,7 @@ def submit():
             elif selected_value1 == "Alpha Miner":
                 image_path = alpha(td_csv, alpha_variant, selected_value3)
 
-            image_url = url_for('static', filename=os.path.basename(image_path), _external=True)
+            image_url = url_for('static', filename=os.path.basename(image_path), _external=True, _scheme='https')
 
             # flash('Clustering and process discovery successful!', 'success')
             return render_template('direct_graph.html',
