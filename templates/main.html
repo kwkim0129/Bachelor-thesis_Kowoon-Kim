@@ -500,7 +500,9 @@ document.getElementById('uploadForm').addEventListener('submit', function(e) {
 </div>
 
 <div class="form-container">
-<form id="submitForm" action="/submit" method="POST" onsubmit="submitForm()">
+<!-- <form id="submitForm" action="/submit" method="POST" onsubmit="submitForm()"> // 안되면 이거 쓰기 -->
+<form id="submitForm" action="/port/5000/submit" method="POST" onsubmit="return submitForm();">
+
 <!-- <form id="submitForm" action="/submit" method="POST" onsubmit="submitForm(); return false;"> -->
     
     <input type="hidden" name="selectedArea" id="selectedAreaInput" value="">
@@ -865,10 +867,12 @@ function submitForm() {
     // // 2nd solution 
     // const form = document.getElementById('submitForm');
     // form.action = '/submit';
-    document.getElementById('submitForm').action = window.location.pathname + "submit"; 
+    const basePath = window.location.pathname.split('/').slice(0, 3).join('/'); // /port/5000
+    document.getElementById('submitForm').action = `${basePath}/submit`;
     document.getElementById('submitForm').submit();
 
-    // return true;  // Allow the form to submit now
+
+    return false;  // Prevent default browser form submission
 }
 
 
