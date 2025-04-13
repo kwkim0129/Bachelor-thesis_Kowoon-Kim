@@ -35,6 +35,10 @@ def heuristics(FILENAME, variant):
     print("Start Activities:", start_activities)
     print("End Activities:", end_activities)
 
+    if -1 in start_activities or -1 in end_activities:
+    raise ValueError("Detected invalid start or end activity (-1). Please choose another DBSCAN eps value.")
+
+
     heu_net = heuristics_miner.apply_heu(event_log)
     gviz = vis.apply(heu_net)
 
