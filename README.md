@@ -1,17 +1,10 @@
-Description of the files
+[How to run the code]
+Access the software via: https://lehre.bpm.in.tum.de/ports/5000/
 
-[Website]
-- static => where image files go after the process model has been created
-- uploads => csv created with clusters
-- templates => main.html and direct_graph.html which determine style of my website
-- app => backend of flask
+You can download the YAML files in the following websites and use them as an input for the software:
+1. manufacturing data: https://zenodo.org/records/7958478
+2. public transport data: https://zenodo.org/records/7411234
 
-[yaml to csv]
-- csvcon2.py: yaml to csv => yaml to csv only that extract values for each activity
+In case the conversion of the YAML into CSV takes too long, just use the "Use existing CSV" dropdown in the software to try it out. 
 
-[discovery]
-- dfgg => extracts dfg 
-- inductive => extracts petri net with inductive miner
-- alpha => extracts petri net with alpha miner
-- heuristics => extracts dfg with heuristics
-
+For any extra questions or feedback please send them to: ge65wew@mytum.de
